@@ -1,19 +1,24 @@
-import express, { response } from 'express'
+import express from 'express'
 import cors from 'cors'
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv'
-import 'dotenv/config'
 
 dotenv.config()
 
-const supabaseUrl = process.env.SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SECRET_KEY
+const port = Number(process.env.PORT) || 3000
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env')
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 
-const supabase = createClient(supabaseUrl, supabaseKey)
 
 //________________________________________________________________________
 //PAIN ENTRIES ENDPOINTS
@@ -592,4 +597,4 @@ app.delete('/api/medication-entries/:id', async (request, response) => {
 })
 
 
-app.listen(3333, () => console.log('Server running on port 3333'))
+app.listen(3000, () => console.log('Server running on port 3333'))
