@@ -463,8 +463,6 @@ app.patch('/api/medication/:id', async (request, response) => {
       return response.status(404).json({ error: 'Entry not found' })
     }
 
-    let a = 1
-
     const updateData: Record<string, unknown> = {}
     
     if (name !== undefined) updateData.name = String(name).trim()
