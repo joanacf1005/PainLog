@@ -37,7 +37,7 @@ app.get('/api/pain-entries', async (request, response) => {
 
     // sucesso: devolve array de registos
     return response.json(data) // Envia array para Postman
-  } catch (err: any) {
+  } catch {
     //  Erro JavaScript (não Supabase): variável undefined, etc.
     return response.status(500).json({ error: 'Server Error' })
   }
@@ -60,7 +60,7 @@ app.get('/api/pain-entries/:id', async (request, response) => {
 
     return response.json(data)
     
-  } catch (err: any) {
+  } catch {
     
     return response.status(500).json({ error: 'Server Error' })
   }
@@ -113,7 +113,7 @@ app.post('/api/pain-entries', async (request, response) => {
 
     return response.status(201).json(data)
     
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -151,8 +151,9 @@ app.put('/api/pain-entries/:id', async (request, response) => {
     }
     
     const missingFields = Object.entries(required) // Verifica campos que estão em falta (ignora 0 e false que são válidos)
-      .filter(([key, value]) => !value && value !== 0 && value !== false)
+      .filter(([, value]) => !value && value !== 0 && value !== false)
       .map(([key]) => key)
+
 
     if (missingFields.length > 0) {
       return response.status(400).json({ 
@@ -195,7 +196,7 @@ app.put('/api/pain-entries/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -236,7 +237,8 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
     }
 
     //  PATCH: só atualiza campos que foram enviados (ignora nulos/vazios)
-    const updateData: any = {}
+    const updateData: Record<string, unknown> = {}
+
     
     if (painLocation !== undefined) updateData.painLocation = String(painLocation).trim()
     if (painIntensity !== undefined) updateData.painIntensity = Number(painIntensity)
@@ -267,7 +269,7 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -302,7 +304,7 @@ app.delete('/api/pain-entries/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -321,7 +323,7 @@ app.get('/api/medication', async (request, response) => {
     }
 
     return response.json(data) 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -342,7 +344,7 @@ app.get('/api/medication/:id', async (request, response) => {
 
     return response.json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -374,7 +376,7 @@ app.post('/api/medication', async (request, response) => {
 
     return response.status(201).json(data)
     
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -398,7 +400,7 @@ app.put('/api/medication/:id', async (request, response) => {
     }
     
     const missingFields = Object.entries(required) 
-      .filter(([key, value]) => !value && value !== 0 && value !== false)
+      .filter(([, value]) => !value && value !== 0 && value !== false)
       .map(([key]) => key)
 
     if (missingFields.length > 0) {
@@ -433,7 +435,7 @@ app.put('/api/medication/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -461,7 +463,7 @@ app.patch('/api/medication/:id', async (request, response) => {
       return response.status(404).json({ error: 'Entry not found' })
     }
 
-    const updateData: any = {}
+    const updateData: Record<string, unknown> = {}
     
     if (name !== undefined) updateData.name = String(name).trim()
     if (dosage !== undefined) updateData.dosage = String(dosage).trim()
@@ -483,7 +485,7 @@ app.patch('/api/medication/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -515,7 +517,7 @@ app.delete('/api/medication/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -538,7 +540,7 @@ app.get('/api/medication-entries', async (request, response) => {
     }
 
     return response.json(data) 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -565,7 +567,7 @@ app.post('/api/medication-entries', async (request, response) => {
     }
 
     return response.status(201).json(data)
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
@@ -591,10 +593,12 @@ app.delete('/api/medication-entries/:id', async (request, response) => {
 
     if (error) return response.status(500).json({ error: error.message })
     return response.status(204).send()
-  } catch (err) {
+
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
 
 
-app.listen(3000, () => console.log('Server running on port 3333'))
+app.listen(port, () => console.log(`Server running on port ${port}`))
+

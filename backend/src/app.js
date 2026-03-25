@@ -1,96 +1,472 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = require("express");
-var cors_1 = require("cors");
-var supabase_js_1 = require("@supabase/supabase-js");
-var dotenv_1 = require("dotenv");
-dotenv_1.default.config();
-var app = (0, express_1.default)();
-app.use((0, cors_1.default)());
-app.use(express_1.default.json());
-var supabase = (0, supabase_js_1.createClient)(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
-// //LISTA TODAS AS PainEntries 
-// app.get('/api/pain-entries', async (request, response) => {
-//   try {
-//     const { data, error } = await supabase //"fala" com o supabase para pedir o que é necessário
-//       .from('PainEntries')   
-//       .select('*')           // SELECT * FROM "PainEntries" no supabase
-//     if (error) {
-//       // Supabase devolveu erro (tabela não existe, sem permissões, etc.)
-//       return response.status(500).json({ error: error.message }) //Envia mensagem de erro para Postman
-//     }
-//     // sucesso: devolve array de registos
-//     return response.json(data) // Envia array para Postman
-//   } catch (err: any) {
-//     //  Erro JavaScript (não Supabase): variável undefined, etc.
-//     return response.status(500).json({ error: 'Server Error' })
-//   }
-// })
-app.get('/api/pain-entries', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, meds, medsError, _b, data, error, err_1;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                _c.trys.push([0, 3, , 4]);
-                return [4 /*yield*/, supabase
-                        .from('Medication')
-                        .select('name')];
-            case 1:
-                _a = _c.sent(), meds = _a.data, medsError = _a.error;
-                if (medsError) {
-                    return [2 /*return*/, res.status(500).json({ error: medsError.message })];
-                }
-                return [4 /*yield*/, supabase
-                        .from('PainEntries')
-                        .select('*')];
-            case 2:
-                _b = _c.sent(), data = _b.data, error = _b.error;
-                return [2 /*return*/, res.json({
-                        medications: meds, // Deve dar 5 registos
-                        painEntries: data, // Deve dar [] (vazio)
-                        error: error === null || error === void 0 ? void 0 : error.message // Mensagem de erro se houver
-                    })];
-            case 3:
-                err_1 = _c.sent();
-                return [2 /*return*/, res.status(500).json({ error: 'Erro interno' })];
-            case 4: return [2 /*return*/];
+import express from 'express';
+import cors from 'cors';
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+dotenv.config();
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SECRET_KEY;
+const port = Number(process.env.PORT) || 3000;
+if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env');
+}
+const supabase = createClient(supabaseUrl, supabaseKey);
+const app = express();
+app.use(cors());
+app.use(express.json());
+//________________________________________________________________________
+//PAIN ENTRIES ENDPOINTS
+//LISTA TODAS AS PainEntries 
+app.get('/api/pain-entries', async (request, response) => {
+    try {
+        const { data, error } = await supabase //"fala" com o supabase para pedir o que é necessário
+            .from('PainEntries')
+            .select('*'); // SELECT * FROM "PainEntries" no supabase
+        if (error) {
+            // Supabase devolveu erro (tabela não existe, sem permissões, etc.)
+            return response.status(500).json({ error: error.message }); //Envia mensagem de erro para Postman
         }
-    });
-}); });
-app.listen(3333, function () { return console.log('Server running on port 3333'); });
+        // sucesso: devolve array de registos
+        return response.json(data); // Envia array para Postman
+    }
+    catch (err) {
+        //  Erro JavaScript (não Supabase): variável undefined, etc.
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+//LISTA UMA PAIN ENTRY
+app.get('/api/pain-entries/:id', async (request, response) => {
+    try {
+        const { id } = request.params; // Extrai o ID da URL 
+        const { data, error } = await supabase
+            .from('PainEntries')
+            .select('*') // SELECT * FROM "PainEntries"
+            .eq('id', id) // WHERE id = :id
+            .single(); // Apenas 1 registo
+        if (error) {
+            return response.status(404).json({ error: 'Entry not found' });
+        }
+        return response.json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+//ADICIONAR NOVA PAINENTRY
+//ATENÇÃO!!!!!!! AO TESTAR POST REMOVI CONSTRAITS, DEPOIS ALTERAR, 
+// ALTER TABLE "PainEntries" 
+// ADD CONSTRAINT "PainEntries_userId_fkey" 
+// FOREIGN KEY ("userId") REFERENCES auth.users(id);
+app.post('/api/pain-entries', async (request, response) => {
+    try {
+        const { painLocation, painIntensity, painType, hasTakenMedication, energyLevel, sleepHours, notes, date, userId } = request.body; //vai buscar os dados necessários 
+        const required = { painLocation, painIntensity, painType, hasTakenMedication, energyLevel, sleepHours, date, userId }; // Cria um objeto com apenas os campos OBRIGATÓRIOS
+        if (Object.values(required).some(value => !value)) { // Verifica se algum campo obrigatório está vazio/null/undefined
+            return response.status(400).json({ error: 'Missing mandatory fields!' });
+        }
+        const { data, error } = await supabase // Insere os dados na tabela 'PainEntries' do Supabase 
+            .from('PainEntries')
+            .insert({
+            "painLocation": painLocation.trim(),
+            "painIntensity": Number(painIntensity),
+            "painType": painType.trim(),
+            "hasTakenMedication": Boolean(hasTakenMedication),
+            "energyLevel": Number(energyLevel),
+            "sleepHours": Number(sleepHours),
+            notes: notes?.trim() || null,
+            date: date,
+            "userId": userId
+        })
+            .select() //Retorna o registo inserido
+            .single(); //Apenas 1 registo
+        if (error)
+            return response.status(500).json({ error: error.message });
+        return response.status(201).json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+//ATUALIZA TUDO
+app.put('/api/pain-entries/:id', async (request, response) => {
+    try {
+        const { id } = request.params; // Extrai o ID da URL 
+        if (!request.body) { // Verifica se o body da requisição existe
+            return response.status(400).json({ error: 'Request body is required!' });
+        }
+        const { // Extrai os dados enviados no corpo da requisição
+        painLocation, painIntensity, painType, hasTakenMedication, energyLevel, sleepHours, notes, date, userId } = request.body;
+        const required = {
+            painLocation,
+            painIntensity,
+            painType,
+            hasTakenMedication,
+            energyLevel,
+            sleepHours,
+            date,
+            userId
+        };
+        const missingFields = Object.entries(required) // Verifica campos que estão em falta (ignora 0 e false que são válidos)
+            .filter(([key, value]) => !value && value !== 0 && value !== false)
+            .map(([key]) => key);
+        if (missingFields.length > 0) {
+            return response.status(400).json({
+                error: `Missing mandatory fields: ${missingFields.join(', ')}`
+            });
+        }
+        // Verifica se existe um registo com este ID 
+        const { data: existing } = await supabase
+            .from('PainEntries') // Seleciona a tabela PainEntries
+            .select('id') // Só vai buscar o campo id 
+            .eq('id', id) // WHERE 
+            .single(); // Pega apenas UM registo
+        if (!existing) {
+            return response.status(404).json({ error: 'Entry not found' });
+        }
+        // UPDATE
+        const { data, error } = await supabase
+            .from('PainEntries')
+            .update({
+            painLocation: String(painLocation).trim(),
+            painIntensity: Number(painIntensity),
+            painType: String(painType).trim(),
+            hasTakenMedication: Boolean(hasTakenMedication),
+            energyLevel: Number(energyLevel),
+            sleepHours: Number(sleepHours),
+            notes: notes ? String(notes).trim() : null,
+            date: String(date),
+            userId: String(userId)
+        })
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) {
+            return response.status(500).json({ error: error.message });
+        }
+        return response.status(200).json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+//ATUALIZA PARCIALMENTE
+app.patch('/api/pain-entries/:id', async (request, response) => {
+    try {
+        // Extrai o ID da URL (ex: /api/pain-entries/a106b83a...)
+        const { id } = request.params;
+        // Verifica se o body da requisição existe
+        if (!request.body) {
+            return response.status(400).json({ error: 'Request body is required!' });
+        }
+        // Extrai os dados enviados (campos opcionais - PATCH só atualiza o que vem)
+        const { painLocation, painIntensity, painType, hasTakenMedication, energyLevel, sleepHours, notes, date, userId } = request.body;
+        // Verifica se o registo existe
+        const { data: existing } = await supabase
+            .from('PainEntries')
+            .select('*') // Pega TODOS os campos atuais
+            .eq('id', id)
+            .single();
+        if (!existing) {
+            return response.status(404).json({ error: 'Entry not found' });
+        }
+        //  PATCH: só atualiza campos que foram enviados (ignora nulos/vazios)
+        const updateData = {};
+        if (painLocation !== undefined)
+            updateData.painLocation = String(painLocation).trim();
+        if (painIntensity !== undefined)
+            updateData.painIntensity = Number(painIntensity);
+        if (painType !== undefined)
+            updateData.painType = String(painType).trim();
+        if (hasTakenMedication !== undefined)
+            updateData.hasTakenMedication = Boolean(hasTakenMedication);
+        if (energyLevel !== undefined)
+            updateData.energyLevel = Number(energyLevel);
+        if (sleepHours !== undefined)
+            updateData.sleepHours = Number(sleepHours);
+        if (notes !== undefined)
+            updateData.notes = notes ? String(notes).trim() : null;
+        if (date !== undefined)
+            updateData.date = String(date);
+        if (userId !== undefined)
+            updateData.userId = String(userId);
+        // Se nenhum campo para atualizar, retorna 400
+        if (Object.keys(updateData).length === 0) {
+            return response.status(400).json({ error: 'No fields to update!' });
+        }
+        // ATUALIZA apenas os campos fornecidos
+        const { data, error } = await supabase
+            .from('PainEntries')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) {
+            return response.status(500).json({ error: error.message });
+        }
+        return response.status(200).json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+//APAGA UMA ENTRY
+app.delete('/api/pain-entries/:id', async (request, response) => {
+    try {
+        const { id } = request.params;
+        // Verifica se o registo com o Id existe
+        const { data: existing } = await supabase
+            .from('PainEntries')
+            .select('id')
+            .eq('id', id)
+            .single();
+        if (!existing) {
+            return response.status(404).json({ error: 'Entry not found' });
+        }
+        // APAGA 
+        const { data, error } = await supabase
+            .from('PainEntries') // Seleciona a tabela PainEntries
+            .delete() // DELETE FROM "PainEntries"
+            .eq('id', id)
+            .select() // Retorna o registo APAGADO
+            .single(); // Apenas 1 registo
+        if (error) {
+            return response.status(500).json({ error: error.message });
+        }
+        return response.status(200).json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+//________________________________________________________________________
+//MEDICATION ENDPOINTS
+app.get('/api/medication', async (request, response) => {
+    try {
+        const { data, error } = await supabase
+            .from('Medication')
+            .select('*');
+        if (error) {
+            return response.status(500).json({ error: error.message });
+        }
+        return response.json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+app.get('/api/medication/:id', async (request, response) => {
+    try {
+        const { id } = request.params;
+        const { data, error } = await supabase
+            .from('Medication')
+            .select('*')
+            .eq('id', id)
+            .single();
+        if (error) {
+            return response.status(404).json({ error: 'Entry not found' });
+        }
+        return response.json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+app.post('/api/medication', async (request, response) => {
+    try {
+        const { name, dosage } = request.body;
+        const required = { name, dosage };
+        if (Object.values(required).some(value => !value)) {
+            return response.status(400).json({ error: 'Missing mandatory fields!' });
+        }
+        const { data, error } = await supabase
+            .from('Medication')
+            .insert({
+            "name": name.trim(),
+            "dosage": dosage.trim()
+        })
+            .select()
+            .single();
+        if (error)
+            return response.status(500).json({ error: error.message });
+        return response.status(201).json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+app.put('/api/medication/:id', async (request, response) => {
+    try {
+        const { id } = request.params;
+        if (!request.body) {
+            return response.status(400).json({ error: 'Request body is required!' });
+        }
+        const { name, dosage } = request.body;
+        const required = {
+            name,
+            dosage
+        };
+        const missingFields = Object.entries(required)
+            .filter(([key, value]) => !value && value !== 0 && value !== false)
+            .map(([key]) => key);
+        if (missingFields.length > 0) {
+            return response.status(400).json({
+                error: `Missing mandatory fields: ${missingFields.join(', ')}`
+            });
+        }
+        const { data: existing } = await supabase
+            .from('Medication')
+            .select('id')
+            .eq('id', id)
+            .single();
+        if (!existing) {
+            return response.status(404).json({ error: 'Entry not found' });
+        }
+        const { data, error } = await supabase
+            .from('Medication')
+            .update({
+            "name": name.trim(),
+            "dosage": dosage.trim()
+        })
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) {
+            return response.status(500).json({ error: error.message });
+        }
+        return response.status(200).json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+app.patch('/api/medication/:id', async (request, response) => {
+    try {
+        const { id } = request.params;
+        if (!request.body) {
+            return response.status(400).json({ error: 'Request body is required!' });
+        }
+        const { name, dosage } = request.body;
+        const { data: existing } = await supabase
+            .from('Medication')
+            .select('*')
+            .eq('id', id)
+            .single();
+        if (!existing) {
+            return response.status(404).json({ error: 'Entry not found' });
+        }
+        const updateData = {};
+        if (name !== undefined)
+            updateData.name = String(name).trim();
+        if (dosage !== undefined)
+            updateData.dosage = String(dosage).trim();
+        if (Object.keys(updateData).length === 0) {
+            return response.status(400).json({ error: 'No fields to update!' });
+        }
+        const { data, error } = await supabase
+            .from('Medication')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) {
+            return response.status(500).json({ error: error.message });
+        }
+        return response.status(200).json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+app.delete('/api/medication/:id', async (request, response) => {
+    try {
+        const { id } = request.params;
+        const { data: existing } = await supabase
+            .from('Medication')
+            .select('id')
+            .eq('id', id)
+            .single();
+        if (!existing) {
+            return response.status(404).json({ error: 'Entry not found' });
+        }
+        const { data, error } = await supabase
+            .from('Medication')
+            .delete()
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) {
+            return response.status(500).json({ error: error.message });
+        }
+        return response.status(200).json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+//_________________________________________________________________________
+//MEDICATIONENTRIES GET
+app.get('/api/medication-entries', async (request, response) => {
+    try {
+        const { data, error } = await supabase
+            .from('MedicationEntries')
+            .select(`
+        *,
+        PainEntries(painLocation, date), 
+        Medication(name, dosage)
+      `);
+        if (error) {
+            return response.status(500).json({ error: error.message });
+        }
+        return response.json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+app.post('/api/medication-entries', async (request, response) => {
+    try {
+        const { painEntriesId, medicationId } = request.body;
+        if (!painEntriesId || !medicationId) {
+            return response.status(400).json({ error: 'painEntriesId and medicationId required!' });
+        }
+        const { data, error } = await supabase
+            .from('MedicationEntries')
+            .insert({
+            "painEntriesId": painEntriesId,
+            "medicationId": medicationId
+        })
+            .select()
+            .single();
+        if (error) {
+            return response.status(500).json({ error: error.message });
+        }
+        return response.status(201).json(data);
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+app.delete('/api/medication-entries/:id', async (request, response) => {
+    try {
+        const { id } = request.params;
+        const { data: existing } = await supabase
+            .from('MedicationEntries')
+            .select('id')
+            .eq('id', id)
+            .single();
+        if (!existing) {
+            return response.status(404).json({ error: 'Link not found' });
+        }
+        const { error } = await supabase
+            .from('MedicationEntries')
+            .delete()
+            .eq('id', id);
+        if (error)
+            return response.status(500).json({ error: error.message });
+        return response.status(204).send();
+    }
+    catch (err) {
+        return response.status(500).json({ error: 'Server Error' });
+    }
+});
+app.listen(3000, () => console.log('Server running on port 3333'));
+//# sourceMappingURL=app.js.map
