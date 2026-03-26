@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv'
-import { verifyToken, type AuthedRequest } from '../middleware/auth.js'
+import { verifyToken, type AuthedRequest } from './middleware/auth.js'
 
 dotenv.config()
 

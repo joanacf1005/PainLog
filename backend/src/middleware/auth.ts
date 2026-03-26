@@ -18,7 +18,7 @@ export const verifyToken = async (req: AuthedRequest, res: Response, next: NextF
   const authHeader = req.headers.authorization // Pega o cabeçalho Authorization do pedido
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) { //verifica se existe o cabeçalho e se começa com bearer
-    return res.status(401).json({ erro: 'Acesso denied. Token not found or invalida format.' })
+    return res.status(401).json({ erro: 'Access denied. Token not found or invalid format.' })
   }
 
   const token = authHeader.split(' ')[1] //corta para ficar o token puro
@@ -26,7 +26,7 @@ export const verifyToken = async (req: AuthedRequest, res: Response, next: NextF
   const { data, error } = await supabase.auth.getUser(token) //verifica se é válido e quem é o dono
 
   if (error || !data.user) {
-    return res.status(401).json({ erro: 'Token inválido ou expirado.' })
+    return res.status(401).json({ erro: 'Invalid or expired token.' })
   }
 
   req.user = { id: data.user.id }
