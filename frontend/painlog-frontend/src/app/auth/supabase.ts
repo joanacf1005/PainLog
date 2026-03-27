@@ -31,4 +31,7 @@ export class SupabaseService {
       },
     });
   }
+  async getUser() {
+    return await this.supabase.auth.getUser();
+  }
 }
