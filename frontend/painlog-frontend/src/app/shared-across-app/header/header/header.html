@@ -1,0 +1,22 @@
+<header class="app-header">
+  <div class="app-name">
+    <h1>PainLog</h1>
+  </div>
+  
+  <div class="profile-section" (click)="toggleProfile()">
+    <div class="avatar">👤</div>
+  </div>
+  
+  @if (showProfileMenu) {
+    <div class="profile-dropdown">
+      <div class="user-header">
+        <div>
+          <div class="user-name">{{ userName }}</div>
+        </div>
+      </div>
+      <hr>
+      <button (click)="logout()">Logout</button>
+    </div>
+  }
+</header>
+

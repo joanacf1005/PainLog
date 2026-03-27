@@ -34,4 +34,12 @@ export class SupabaseService {
   async getUser() {
     return await this.supabase.auth.getUser();
   }
+
+  async signOut() {
+    return await this.supabase.auth.signOut();
+  }
+
+  get supabasePublic() {
+    return this.supabase;  
+  }
 }
