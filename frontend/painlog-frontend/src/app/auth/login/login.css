@@ -9,7 +9,7 @@
 
 .login-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 40%;
   background: var(--background-card);
   border: 1px solid var(--background-soft);
   border-radius: 20px;

@@ -51,7 +51,7 @@ export class Register {
 
     this.loading = true;
 
-     const firstName = this.form.value.firstName?.trim() ?? '';
+    const firstName = this.form.value.firstName?.trim() ?? '';
     const lastName = this.form.value.lastName?.trim() ?? '';
     const email = this.form.value.email ?? '';
     const password = this.form.value.password ?? '';
