@@ -1,0 +1,39 @@
+<main class="home-page">
+  <section class="welcome-section">
+    <h2>Welcome back, {{ userName }}!</h2>
+    <p>How are you feeling today?</p>
+
+    <button class="add-entry-btn" routerLink="/add-record">Add Entry</button>
+  </section>
+
+  <!-- <section class="kpis-section">
+    <div class="kpi-card">
+      <h3>Average pain</h3>
+      <p>{{ averagePain }}/10</p>
+    </div>
+
+    <div class="kpi-card">
+      <h3>Highest pain</h3>
+      <p>{{ highestPain }}/10</p>
+    </div>
+
+    <div class="kpi-card">
+      <h3>This month</h3>
+      <p>{{ monthlyRecords }}</p>
+    </div>
+  </section> -->
+
+  <!-- <section class="help-section">
+    <h3>Helpful articles</h3>
+
+    <div class="help-cards">
+      @for (article of articles; track article.id) {
+        <article class="help-card">
+          <h4>{{ article.title }}</h4>
+          <p>{{ article.description }}</p>
+          <a [routerLink]="article.link">Read more</a>
+        </article>
+      }
+    </div>
+  </section> -->
+</main>
