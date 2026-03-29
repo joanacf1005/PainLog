@@ -9,6 +9,7 @@
   background: var(--background-card);
   color: var(--text-main);
   overflow: hidden;
+  height: -webkit-fill-available;
 }
 
 .menu-container {
@@ -60,7 +61,6 @@
   margin: 0;
 }
 
-/* Main navigation */
 .main-navigation {
   flex: 1;
   list-style: none;
