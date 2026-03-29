@@ -1,7 +1,6 @@
 .footer {
     background: var(--background-card);
     padding: 1.5rem 2.5rem;
-    box-shadow: 0 -2px 12px rgba(111, 108, 180, 0.25);
     margin-top: 4rem;
 }
 

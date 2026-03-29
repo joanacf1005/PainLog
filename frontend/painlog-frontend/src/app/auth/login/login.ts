@@ -45,7 +45,7 @@ export class LoginComponent {
       }
 
       alert('Login successful!');
-      await this.router.navigate(['/dashboard']);
+      await this.router.navigate(['/homepage']);
     } finally {
       this.loading = false;
     }
