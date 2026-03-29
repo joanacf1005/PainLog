@@ -1,1 +1,96 @@
-<p>new-entry works!</p>
+<main class="new-entry-page">
+  <section class="form-card">
+    <header class="form-header">
+      <h1>New Pain Entry</h1>
+      <p>Record how you’re feeling today.</p>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="new-entry-form">
+      <div class="form-grid">
+        <div class="field">
+          <label for="painIntensity">Pain intensity</label>
+          <input id="painIntensity" type="number" min="0" max="10" formControlName="painIntensity" />
+          @if (form.get('painIntensity')?.touched && form.get('painIntensity')?.invalid) {
+            <small class="error">Pain intensity is required.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="painLocation">Pain location</label>
+          <input id="painLocation" type="text" formControlName="painLocation" placeholder="e.g. lower back" />
+          @if (form.get('painLocation')?.touched && form.get('painLocation')?.invalid) {
+            <small class="error">Pain location is required.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="painType">Pain type</label>
+          <select id="painType" formControlName="painType">
+            <option value="" disabled>Select type</option>
+            <option value="sharp">Sharp</option>
+            <option value="aching">Aching</option>
+            <option value="burning">Burning</option>
+            <option value="throbbing">Throbbing</option>
+            <option value="pressure">Pressure</option>
+          </select>
+          @if (form.get('painType')?.touched && form.get('painType')?.invalid) {
+            <small class="error">Pain type is required.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="energyLevel">Energy level</label>
+          <input id="energyLevel" type="number" min="0" max="10" formControlName="energyLevel" />
+          @if (form.get('energyLevel')?.touched && form.get('energyLevel')?.invalid) {
+            <small class="error">Energy level is required.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="sleepHours">Sleep hours</label>
+          <input id="sleepHours" type="number" min="0" max="24" formControlName="sleepHours" />
+          @if (form.get('sleepHours')?.touched && form.get('sleepHours')?.invalid) {
+            <small class="error">Sleep hours are required.</small>
+          }
+        </div>
+      </div>
+
+      <section class="checkbox-row">
+        <label class="checkbox-option">
+          <input type="checkbox" formControlName="hasTakenMedication" />
+          <span>I took medication today</span>
+        </label>
+      </section>
+
+      <div class="field">
+        <label for="notes">Notes</label>
+        <textarea id="notes" rows="5" formControlName="notes" placeholder="Add any extra details..."></textarea>
+      </div>
+
+      <section class="medication-section" *ngIf="form.value.hasTakenMedication">
+        <h2>Medication</h2>
+        <p>Select the medication used today.</p>
+
+        <div class="medication-list">
+          <!-- aqui mais tarde ligas os teus medicamentos -->
+          <label class="medication-chip">
+            <input type="checkbox" />
+            <span>Medication 1</span>
+          </label>
+
+          <label class="medication-chip">
+            <input type="checkbox" />
+            <span>Medication 2</span>
+          </label>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <button type="button" class="secondary-btn" routerLink="/homepage">Cancel</button>
+        <button type="submit" class="primary-btn" [disabled]="loading || form.invalid">
+          {{ loading ? 'Saving...' : 'Save entry' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>
