@@ -1,39 +1,45 @@
 <main class="home-page">
   <section class="welcome-section">
-    <h2>Welcome back, {{ userName }}!</h2>
-    <p>How are you feeling today?</p>
+    <!-- @if (dailyEntry) { -->
+      <div class="daily-entry-hero">
+        <div class="daily-entry-badge">Today's entry</div>
+        <h2> dailyEntry.title </h2>
+        <p> dailyEntry.description </p>
 
-    <button class="add-entry-btn" routerLink="/add-record">Add Entry</button>
+        <div class="daily-entry-meta">
+          <span>Pain: dailyEntry.pain /10</span>
+          <span>dailyEntry.date</span>
+        </div>
+      </div>
+    <!-- } @else { -->
+      <div class="welcome-header">
+        <h2>How are you feeling today, {{ firstName }}?</h2>
+        <button class="add-entry-btn" routerLink="/add-record">Add Entry</button>
+      </div>
+
+     
+    <!-- } -->
   </section>
 
-  <!-- <section class="kpis-section">
+  <section class="kpis-section">
     <div class="kpi-card">
       <h3>Average pain</h3>
-      <p>{{ averagePain }}/10</p>
     </div>
 
     <div class="kpi-card">
       <h3>Highest pain</h3>
-      <p>{{ highestPain }}/10</p>
     </div>
 
     <div class="kpi-card">
       <h3>This month</h3>
-      <p>{{ monthlyRecords }}</p>
     </div>
-  </section> -->
+  </section>
 
-  <!-- <section class="help-section">
+  <section class="help-section">
     <h3>Helpful articles</h3>
 
     <div class="help-cards">
-      @for (article of articles; track article.id) {
-        <article class="help-card">
-          <h4>{{ article.title }}</h4>
-          <p>{{ article.description }}</p>
-          <a [routerLink]="article.link">Read more</a>
-        </article>
-      }
+      <article class="help-card"></article>
     </div>
-  </section> -->
+  </section>
 </main>
