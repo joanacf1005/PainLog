@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import {
+  AuthChangeEvent,
+  createClient,
+  Session,
+  SupabaseClient
+} from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -9,7 +14,10 @@ export class SupabaseService {
   private supabase: SupabaseClient;
 
   constructor() {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+    this.supabase = createClient(
+      environment.supabaseUrl,
+      environment.supabaseKey
+    );
   }
 
   signInWithPassword(email: string, password: string) {
@@ -31,8 +39,19 @@ export class SupabaseService {
       },
     });
   }
-  async getUser() {
-    return await this.supabase.auth.getUser();
+
+  getUser() {
+    return this.supabase.auth.getUser();
+  }
+
+  getSession() {
+    return this.supabase.auth.getSession();
+  }
+
+  onAuthStateChange(
+    callback: (event: AuthChangeEvent, session: Session | null) => void
+  ) {
+    return this.supabase.auth.onAuthStateChange(callback);
   }
 
   async signOut() {
@@ -40,6 +59,6 @@ export class SupabaseService {
   }
 
   get supabasePublic() {
-    return this.supabase;  
+    return this.supabase;
   }
 }

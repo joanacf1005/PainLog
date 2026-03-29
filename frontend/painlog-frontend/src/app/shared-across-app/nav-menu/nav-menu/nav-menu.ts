@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SupabaseService } from '../../../auth/supabase';
 
@@ -9,20 +9,37 @@ import { SupabaseService } from '../../../auth/supabase';
   templateUrl: './nav-menu.html',
   styleUrl: './nav-menu.css'
 })
-export class NavMenu implements OnInit {
+export class NavMenu implements OnInit, OnDestroy {
   userName = 'User';
-  
+
   private supabaseService = inject(SupabaseService);
+  private authSubscription: any;
 
   async ngOnInit() {
+    await this.loadUserFromSession();
+
+    this.authSubscription = this.supabaseService.onAuthStateChange(() => {
+      this.loadUserFromSession();
+    });
+  }
+
+  ngOnDestroy() {
+    this.authSubscription?.subscription?.unsubscribe?.();
+  }
+
+  async loadUserFromSession() {
     try {
-      const { data } = await this.supabaseService.getUser();
-      const user = data.user;
-      
-      if (user && user.user_metadata) {
-        const metadata = user.user_metadata as any;
-        this.userName = `${metadata.firstName || ''} ${metadata.lastName || ''}`.trim() || 'User';
+      const { data: sessionData } = await this.supabaseService.getSession();
+
+      const user = sessionData.session?.user;
+      if (!user) {
+        this.userName = 'User';
+        return;
       }
+
+      const metadata = user.user_metadata as any;
+      this.userName =
+        `${metadata?.firstName || ''} ${metadata?.lastName || ''}`.trim() || 'User';
     } catch (error) {
       console.error('Error loading user:', error);
       this.userName = 'User';
