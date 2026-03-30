@@ -18,3 +18,7 @@ build/
 .vscode/
 .idea/
 **/.env
+
+# Environments
+
+**/environment.ts

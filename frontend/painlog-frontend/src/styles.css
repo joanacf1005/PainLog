@@ -1,0 +1,51 @@
+/* You can add global styles to this file, and also import other style files */
+:root{
+--background-main: #f5f9fc;
+--background-card: #ffffff;
+--background-soft: #e3ecf3;
+--text-main: #1f2a37;
+--text-secondary: #5b6b7c;
+--btn-primary-hover: #42769e;
+--btn-secondary-hover: #b7cfe1;
+--btn-primary: #6f9fc3;
+--btn-secondary: #A5BED2;
+--pain-zero: #7bc97e;
+--pain-low: #BEAD76;
+--pain-medium: #d4a373;
+--pain-high: #c97a7a;
+--success: #7bc97e;
+--error: #c97a7a;
+--warning: #d4a373;
+}
+
+[data-theme="dark"] {
+  --background-main: #18212e;
+  --background-card: #243244;
+  --background-soft: #2d3e52;
+
+  --text-main: #f5f7fb;
+  --text-secondary: #b4c0d0;
+
+  --btn-primary: #6aa9dc;
+  --btn-secondary: #6d839a;
+  --btn-primary-hover: #84b9e6;
+  --btn-secondary-hover: #7e95aa;
+
+  --pain-zero: #7bc97e;
+  --pain-low: #bead76;
+  --pain-medium: #d4a373;
+  --pain-high: #c97a7a;
+
+  --success: #7bc97e;
+  --error: #c97a7a;
+  --warning: #d4a373;
+}
+
+* {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--background-main)
+}
