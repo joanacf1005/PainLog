@@ -24,6 +24,14 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'PainLog API', 
+    docs: '/health',
+    api: '/api/pain-entries (PROTEGIDO)'
+  });
+});
+
 app.use('/api/pain-entries', verifyToken)
 app.use('/api/medication-entries', verifyToken)
 app.use('/api/medication', verifyToken)
