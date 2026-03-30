@@ -132,14 +132,13 @@
 
 .edit-entry-btn, 
 .detail-entry-btn {
-  background: var(--btn-primary);
+  background: var(--btn-secondary);
   color: var(--background-card);
-  box-shadow: 0 8px 18px rgba(66, 118, 158, 0.22);
 }
 
 .edit-entry-btn:hover, 
 .detail-entry-btn:hover {
-  background: var(--btn-primary-hover);
+  background: var(--btn-secondary-hover);
   transform: translateY(-1px);
 }
 
@@ -198,7 +197,7 @@
   margin: 0 0 18px;
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--text-secondary);
 }
 
 .help-cards {

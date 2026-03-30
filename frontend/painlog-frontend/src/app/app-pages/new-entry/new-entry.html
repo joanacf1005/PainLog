@@ -1,8 +1,8 @@
 <main class="new-entry-page">
   <section class="form-card">
     <header class="form-header">
-      <h1>New Pain Entry</h1>
-      <p>Record how you’re feeling today.</p>
+      <h1>{{ isEditMode ? 'Edit Pain Entry' : 'New Pain Entry' }}</h1>
+    <p>{{ isEditMode ? 'Update your record.' : 'Record how you’re feeling today.' }}</p>
     </header>
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="new-entry-form">
@@ -127,7 +127,7 @@
       <div class="form-actions">
         <button type="button" class="secondary-btn" routerLink="/homepage">Cancel</button>
         <button type="submit" class="primary-btn" [disabled]="loading || form.invalid">
-          {{ loading ? 'Saving...' : 'Save entry' }}
+          {{ loading ? 'Saving...' : (isEditMode ? 'Update entry' : 'Save entry') }}
         </button>
       </div>
     </form>
