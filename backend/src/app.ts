@@ -20,6 +20,10 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 app.use('/api/pain-entries', verifyToken)
 app.use('/api/medication-entries', verifyToken)
 app.use('/api/medication', verifyToken)
@@ -653,6 +657,7 @@ app.post('/api/medication-entries', async (request, response) => {
 
 app.delete('/api/medication-entries/:id', async (request, response) => {
   try {
+    
     const { id } = request.params as { id: string }
 
     const { data: existing } = await supabase
@@ -677,7 +682,5 @@ app.delete('/api/medication-entries/:id', async (request, response) => {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
-
-
 
 app.listen(port, () => console.log(`Server running on port ${port}`))
