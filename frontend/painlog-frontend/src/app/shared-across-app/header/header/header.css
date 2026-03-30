@@ -5,7 +5,7 @@
   padding: 0.75rem 2rem;
   background: var(--background-card);
   border-bottom: 1px solid var(--background-soft);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .app-name h1 {
@@ -15,18 +15,41 @@
   font-weight: 700;
 }
 
-.logout-btn {
+.header-actions {
   display: flex;
   align-items: center;
+  gap: 0.75rem;
+}
+
+.theme-toggle,
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border: 2px solid var(--error);
-  background: rgba(201, 122, 122, 0.2);
-  color: var(--error);
+  padding: 0.75rem 1.1rem;
   border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.theme-toggle {
+  background: var(--background-soft);
+  color: var(--text-main);
+  border-color: rgba(127, 144, 164, 0.18);
+}
+
+.theme-toggle:hover {
+  background: color-mix(in srgb, var(--background-soft) 85%, white);
+  transform: translateY(-1px);
+}
+
+.logout-btn {
+  border: 2px solid var(--error);
+  background: rgba(201, 122, 122, 0.2);
+  color: var(--error);
 }
 
 .logout-btn:hover {

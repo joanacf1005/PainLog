@@ -12,8 +12,18 @@ export class Header {
   private supabaseService = inject(SupabaseService);
   private router = inject(Router);
 
+  isDarkMode = false;
+
   async logout() {
     await this.supabaseService.signOut();
     await this.router.navigate(['/login']);
+  }
+
+  toggleTheme(): void {
+    if (typeof window !== 'undefined') {
+      this.isDarkMode = !this.isDarkMode;
+      localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', this.isDarkMode ? 'dark' : 'light');
+    }
   }
 }

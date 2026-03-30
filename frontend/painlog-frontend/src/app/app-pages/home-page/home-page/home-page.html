@@ -2,22 +2,25 @@
   <section class="welcome-section">
     @if (dailyEntry) {
       <div class="daily-entry-hero">
-        <div class="daily-entry-badge">Today's entry</div>
-        <p>
-          Pain at {{ dailyEntry.painLocation }}.
-          Pain type: {{ dailyEntry.painType }}. </p>
-        <p> {{ dailyEntry.hasTakenMedication ? 'Medication was taken today.' : 'No medication was taken today.' }}</p>
-       
+        <div class="daily-entry-content">
+          <div class="daily-entry-badge">Today's Entry • {{ todayLabel }}</div>
+            <p>Pain location: {{ dailyEntry.painLocation }}.</p>
+            <P>Pain type: {{ dailyEntry.painType }}.</P>
+            <p>{{ dailyEntry.hasTakenMedication ? 'Medication was taken today.' : 'No medication was taken today.' }}</p>
 
-        <div class="daily-entry-meta">
-          <span>Intensity: {{ dailyEntry.painIntensity }}/10</span>
-          <span>Energy Level: {{ dailyEntry.energyLevel }}/5</span>
-          <span>Sleep: {{ dailyEntry.sleepHours }}h</span>
+          <div class="daily-entry-meta">
+            <span>Intensity: {{ dailyEntry.painIntensity }}/10</span>
+            <span>Energy Level: {{ dailyEntry.energyLevel }}/5</span>
+            <span>Sleep: {{ dailyEntry.sleepHours }}h</span>
+          </div>
+
         </div>
 
-        @if (dailyEntry.notes) {
-          <p class="daily-entry-notes">{{ dailyEntry.notes }}</p>
-        }
+        <div class="daily-entry-actions">
+          <button type="button" class="detail-entry-btn" [routerLink]="['/deatils-entry', dailyEntry.id]">Details</button>
+          <button type="button" class="edit-entry-btn" [routerLink]="['/edit-entry', dailyEntry.id]">Edit</button>
+          <button type="button" class="delete-entry-btn" (click)="openDeleteModal(dailyEntry.id)">Delete</button>
+        </div>
       </div>
     } @else {
       <div class="welcome-header">
@@ -48,4 +51,18 @@
       <article class="help-card"></article>
     </div>
   </section>
+
+  @if (showDeleteModal) {
+    <div class="modal-backdrop" (click)="closeDeleteModal()">
+      <div class="delete-modal" (click)="$event.stopPropagation()">
+        <h3>Delete entry?</h3>
+        <p>This action cannot be undone.</p>
+
+        <div class="modal-actions">
+          <button type="button" class="modal-cancel-btn" (click)="closeDeleteModal()">Cancel</button>
+          <button type="button" class="modal-delete-btn" (click)="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+  }
 </main>

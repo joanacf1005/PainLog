@@ -78,4 +78,11 @@ export class SupabaseService {
       .order('created_at', { ascending: false })
       .limit(1);
   }
+
+  async deletePainEntry(id: string) {
+    return await this.supabase
+      .from('PainEntries')
+      .delete()
+      .eq('id', id);
+  }
 }

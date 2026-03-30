@@ -14,6 +14,14 @@ export class HomePage implements OnInit {
   firstName = 'User';
   dailyEntry: any = null;
 
+  showDeleteModal = false;
+  entryToDeleteId: string | null = null;
+  todayLabel = new Date().toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+
   private supabaseService = inject(SupabaseService);
 
   async ngOnInit() {
@@ -32,5 +40,27 @@ export class HomePage implements OnInit {
         this.dailyEntry = entries[0];
       }
     }
+  }
+
+  openDeleteModal(id: string) {
+    this.entryToDeleteId = id;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.entryToDeleteId = null;
+  }
+
+  async confirmDelete() {
+    if (!this.entryToDeleteId) return;
+
+    const { error } = await this.supabaseService.deletePainEntry(this.entryToDeleteId);
+
+    if (!error) {
+      this.dailyEntry = null;
+    }
+
+    this.closeDeleteModal();
   }
 }
