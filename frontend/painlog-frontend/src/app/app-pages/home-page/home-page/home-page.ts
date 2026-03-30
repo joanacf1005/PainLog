@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { SupabaseService } from '../../../auth/supabase';
 import { RouterLink } from '@angular/router';
+import { SupabaseService } from '../../../auth/supabase';
 
 @Component({
   selector: 'app-home-page',
@@ -12,6 +12,7 @@ import { RouterLink } from '@angular/router';
 export class HomePage implements OnInit {
   userName = 'User';
   firstName = 'User';
+  dailyEntry: any = null;
 
   private supabaseService = inject(SupabaseService);
 
@@ -24,6 +25,12 @@ export class HomePage implements OnInit {
       this.userName =
         `${metadata.firstName || ''} ${metadata.lastName || ''}`.trim() || 'User';
       this.firstName = this.userName.split(' ')[0] || 'User';
+
+      const { data: entries, error } = await this.supabaseService.getTodaysPainEntry(user.id);
+
+      if (!error && entries && entries.length > 0) {
+        this.dailyEntry = entries[0];
+      }
     }
   }
 }

@@ -1,24 +1,30 @@
 <main class="home-page">
   <section class="welcome-section">
-    <!-- @if (dailyEntry) { -->
+    @if (dailyEntry) {
       <div class="daily-entry-hero">
         <div class="daily-entry-badge">Today's entry</div>
-        <h2> dailyEntry.title </h2>
-        <p> dailyEntry.description </p>
+        <p>
+          Pain at {{ dailyEntry.painLocation }}.
+          Pain type: {{ dailyEntry.painType }}. </p>
+        <p> {{ dailyEntry.hasTakenMedication ? 'Medication was taken today.' : 'No medication was taken today.' }}</p>
+       
 
         <div class="daily-entry-meta">
-          <span>Pain: dailyEntry.pain /10</span>
-          <span>dailyEntry.date</span>
+          <span>Intensity: {{ dailyEntry.painIntensity }}/10</span>
+          <span>Energy Level: {{ dailyEntry.energyLevel }}/5</span>
+          <span>Sleep: {{ dailyEntry.sleepHours }}h</span>
         </div>
+
+        @if (dailyEntry.notes) {
+          <p class="daily-entry-notes">{{ dailyEntry.notes }}</p>
+        }
       </div>
-    <!-- } @else { -->
+    } @else {
       <div class="welcome-header">
         <h2>How are you feeling today, {{ firstName }}?</h2>
         <button class="add-entry-btn" routerLink="/newentry">Add Entry</button>
       </div>
-
-     
-    <!-- } -->
+    }
   </section>
 
   <section class="kpis-section">
