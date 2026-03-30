@@ -61,4 +61,21 @@ export class SupabaseService {
   get supabasePublic() {
     return this.supabase;
   }
+
+  async getTodaysPainEntry(userId: string) {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    return await this.supabase
+      .from('PainEntries')
+      .select('*')
+      .eq('userId', userId)
+      .gte('created_at', startOfDay.toISOString())
+      .lte('created_at', endOfDay.toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1);
+  }
 }

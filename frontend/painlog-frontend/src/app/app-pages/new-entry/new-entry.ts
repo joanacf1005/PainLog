@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../auth/supabase';
 
+
 @Component({
   selector: 'app-new-entry',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, HttpClientModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './new-entry.html',
   styleUrl: './new-entry.css',
 })
@@ -27,12 +28,32 @@ export class NewEntry implements OnInit {
     painIntensity: ['', [Validators.required]],
     painType: ['', [Validators.required]],
     hasTakenMedication: [false],
+    name: [''],
+    dosage: [''],
     energyLevel: ['', [Validators.required]],
     sleepHours: ['', [Validators.required]],
-    notes: ['', [Validators.maxLength(1000)]],
+    notes: [''],
   });
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.form.get('hasTakenMedication')?.valueChanges.subscribe((checked) => {
+      const name = this.form.get('name');
+      const dosage = this.form.get('dosage');
+
+      if (checked) {
+        name?.setValidators([Validators.required, Validators.minLength(2)]);
+        dosage?.setValidators([Validators.required, Validators.minLength(1)]);
+      } else {
+        name?.clearValidators();
+        dosage?.clearValidators();
+        name?.setValue('');
+        dosage?.setValue('');
+      }
+
+      name?.updateValueAndValidity();
+      dosage?.updateValueAndValidity();
+    });
+  }
 
   async submit() {
     this.errorMessage = '';
@@ -46,7 +67,6 @@ export class NewEntry implements OnInit {
 
     try {
       const { data: userData, error: userError } = await this.supabase.getUser();
-
       if (userError || !userData.user) {
         this.errorMessage = 'User not authenticated';
         return;
@@ -60,23 +80,85 @@ export class NewEntry implements OnInit {
         return;
       }
 
-      const payload = {
-        ...this.form.getRawValue(),
-      };
+      const raw = this.form.getRawValue();
+
+      const painLocation = String(raw.painLocation ?? '').trim();
+      const painType = String(raw.painType ?? '').trim();
+      const notes = String(raw.notes ?? '').trim();
+
+      if (
+        !painLocation ||
+        !painType ||
+        raw.painIntensity === '' ||
+        raw.energyLevel === '' ||
+        raw.sleepHours === ''
+      ) {
+        this.errorMessage = 'Fill in mandatory fields correctly.';
+        return;
+      }
+
+      const painIntensity = Number(raw.painIntensity);
+      const energyLevel = Number(raw.energyLevel);
+      const sleepHours = Number(raw.sleepHours);
+
+      if (
+        Number.isNaN(painIntensity) ||
+        Number.isNaN(energyLevel) ||
+        Number.isNaN(sleepHours)
+      ) {
+        this.errorMessage = 'Fill in mandatory fields correctly.';
+        return;
+      }
+
+      const hasTakenMedication = !!raw.hasTakenMedication;
 
       const headers = new HttpHeaders({
         Authorization: `Bearer ${accessToken}`,
       });
 
+      if (hasTakenMedication) {
+        const name = String(raw.name ?? '').trim();
+        const dosage = String(raw.dosage ?? '').trim();
+
+        if (!name || !dosage) {
+          this.errorMessage = 'Fill in medication name and dosage.';
+          return;
+        }
+
+        await firstValueFrom(
+          this.http.post('http://localhost:3000/api/medication', { name, dosage }, { headers })
+        );
+      }
+
+      const painEntryPayload = {
+        painLocation,
+        painIntensity,
+        painType,
+        hasTakenMedication,
+        energyLevel,
+        sleepHours,
+        notes,
+      };
+
+      console.log('painEntryPayload', painEntryPayload);
+
       await firstValueFrom(
-        this.http.post('http://localhost:3000/api/pain-entries', payload, { headers })
+        this.http.post('http://localhost:3000/api/pain-entries', painEntryPayload, { headers })
       );
 
       await this.router.navigate(['/homepage']);
-
     } catch (error: any) {
-      this.errorMessage = error?.message ?? 'Error saving entry';
+      console.error('Save error:', error);
 
+      if (error?.error?.error) {
+        this.errorMessage = error.error.error;
+      } else if (error?.error?.message) {
+        this.errorMessage = error.error.message;
+      } else if (error?.message) {
+        this.errorMessage = error.message;
+      } else {
+        this.errorMessage = 'Error saving entry';
+      }
     } finally {
       this.loading = false;
     }
