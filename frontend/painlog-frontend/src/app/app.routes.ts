@@ -11,6 +11,7 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'homepage', component: HomePage },
   { path: 'newentry', component: NewEntry},
+  { path: 'edit-entry/:id', component: NewEntry },
   { path: '**', redirectTo: 'login' }
 ];
 
