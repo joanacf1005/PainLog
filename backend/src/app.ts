@@ -20,6 +20,18 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'PainLog API', 
+    docs: '/health',
+    api: '/api/pain-entries (PROTEGIDO)'
+  });
+});
+
 app.use('/api/pain-entries', verifyToken)
 app.use('/api/medication-entries', verifyToken)
 app.use('/api/medication', verifyToken)
@@ -47,6 +59,10 @@ app.get('/api/pain-entries', async (request, response) => {
     if (error) {
       // Supabase devolveu erro (tabela não existe, sem permissões, etc.)
       return response.status(500).json({ error: error.message }) //Envia mensagem de erro para Postman
+    }
+
+    if (!data) {
+      return response.status(404).json({ error: 'Entry not found' })
     }
 
     // sucesso: devolve array de registos
@@ -606,19 +622,17 @@ app.get('/api/medication-entries', async (request, response) => {
   try {
     const { data, error } = await supabase 
       .from('MedicationEntries')  
-      .select(`
-        *,
-        PainEntries(painLocation, date), 
-        Medication(name, dosage)
-      `)
+      .select(`*`)
 
     if (error) {
       return response.status(500).json({ error: error.message }) 
     }
 
     return response.json(data) 
+    
   } catch {
     return response.status(500).json({ error: 'Server Error' })
+    
   }
 })
 
@@ -653,6 +667,7 @@ app.post('/api/medication-entries', async (request, response) => {
 
 app.delete('/api/medication-entries/:id', async (request, response) => {
   try {
+    
     const { id } = request.params as { id: string }
 
     const { data: existing } = await supabase
@@ -677,7 +692,5 @@ app.delete('/api/medication-entries/:id', async (request, response) => {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
-
-
 
 app.listen(port, () => console.log(`Server running on port ${port}`))

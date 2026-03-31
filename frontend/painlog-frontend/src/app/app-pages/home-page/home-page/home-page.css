@@ -18,7 +18,7 @@
 .welcome-header h2 {
   margin: 0;
   flex: 1;
-  color: var(--text-main);
+  color: var(--btn-primary);
   font-size: 2rem;
   font-weight: 700;
 }
