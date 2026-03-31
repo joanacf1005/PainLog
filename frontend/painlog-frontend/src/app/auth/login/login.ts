@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../supabase';
+import { AuthState } from '../auth-state/auth-state';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ export class Login {
   private fb = inject(FormBuilder);
   private supabase = inject(SupabaseService);
   private router = inject(Router);
+  private authState = inject(AuthState);
 
   loading = false;
   errorMessage = '';
@@ -44,9 +46,10 @@ export class Login {
         return;
       }
 
+      this.authState.isLoggedIn.set(true);
       await this.router.navigate(['/homepage']);
     } catch (error: any) {
-      this.errorMessage = error?.message ?? 'Erro ao fazer login';
+      this.errorMessage = error?.message ?? 'Login error';
     } finally {
       this.loading = false;
     }

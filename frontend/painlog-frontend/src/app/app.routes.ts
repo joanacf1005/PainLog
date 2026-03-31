@@ -3,6 +3,7 @@ import { Register } from './auth/register/register';
 import { Login } from './auth/login/login';
 import { NewEntry } from './app-pages/new-entry/new-entry';
 import { HomePage } from './app-pages/home-page/home-page/home-page';
+import { ReportsPage } from './app-pages/reports-page/reports-page';
 import { authGuard } from './auth/guard/guard';
 
 
@@ -13,6 +14,7 @@ export const routes: Routes = [
   { path: 'homepage', component: HomePage, canActivate: [authGuard] },
   { path: 'newentry', component: NewEntry, canActivate: [authGuard]},
   { path: 'edit-entry/:id', component: NewEntry, canActivate: [authGuard] },
+  { path: 'reportspage', component: ReportsPage, canActivate: [authGuard]},
   { path: '**', redirectTo: 'login' }
 ];
 

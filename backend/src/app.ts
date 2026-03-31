@@ -61,6 +61,10 @@ app.get('/api/pain-entries', async (request, response) => {
       return response.status(500).json({ error: error.message }) //Envia mensagem de erro para Postman
     }
 
+    if (!data) {
+      return response.status(404).json({ error: 'Entry not found' })
+    }
+
     // sucesso: devolve array de registos
     return response.json(data) // Envia array para Postman
   } catch {
@@ -618,19 +622,17 @@ app.get('/api/medication-entries', async (request, response) => {
   try {
     const { data, error } = await supabase 
       .from('MedicationEntries')  
-      .select(`
-        *,
-        PainEntries(painLocation, date), 
-        Medication(name, dosage)
-      `)
+      .select(`*`)
 
     if (error) {
       return response.status(500).json({ error: error.message }) 
     }
 
     return response.json(data) 
+    
   } catch {
     return response.status(500).json({ error: 'Server Error' })
+    
   }
 })
 
