@@ -1,0 +1,132 @@
+<main class="pain-entries-page">
+  <section class="page-header">
+    <div>
+      <h1>Pain Entries</h1>
+      <p>Browse your pain history, filter records, and search by text.</p>
+    </div>
+  </section>
+
+  <section class="filters-container">
+    <div class="filters-desktop">
+      <div class="filter-group">
+        <button type="button" class="filter-btn" [class.active]="currentFilter === 'all'" (click)="setFilter('all')">All</button>
+        <button type="button" class="filter-btn" [class.active]="currentFilter === 'painLocation'" (click)="setFilter('painLocation')">Location A-Z</button>
+        <button type="button" class="filter-btn" [class.active]="currentFilter === 'painType'" (click)="setFilter('painType')">Type A-Z</button>
+        <button type="button" class="filter-btn" [class.active]="currentFilter === 'painIntensity'" (click)="setFilter('painIntensity')">Highest Intensity</button>
+        <button type="button" class="filter-btn" [class.active]="currentFilter === 'hasMedication'" (click)="setFilter('hasMedication')">With Medication</button>
+      </div>
+    </div>
+  </section>
+ 
+   <!-- <div class="filters-mobile">
+    <button type="button" class="filters-toggle" (click)="filtersOpen = !filtersOpen">
+      Filters
+      <span>{{ filtersOpen ? '▲' : '▼' }}</span>
+    </button>
+
+
+    @if (filtersOpen) {
+      <div class="filters-dropdown">
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="currentFilter === 'all'"
+          (click)="setFilter('all')"
+        >
+          All
+        </button>
+
+
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="currentFilter === 'painLocation'"
+          (click)="setFilter('painLocation')"
+        >
+          Location
+        </button>
+
+
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="currentFilter === 'painType'"
+          (click)="setFilter('painType')"
+        >
+          Type
+        </button>
+
+
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="currentFilter === 'painIntensity'"
+          (click)="setFilter('painIntensity')"
+        >
+          Intensity
+        </button>
+
+
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="currentFilter === 'hasMedication'"
+          (click)="setFilter('hasMedication')"
+        >
+          Medication
+        </button>
+      </div>
+    }
+  </div>
+</section> -->
+
+    <section class="pain-entries-grid">
+        @for (entry of currentPainEntries; track entry.id) {
+            <article class="daily-entry-hero">
+                <div class="daily-entry-content">
+                    <div class="daily-entry-badge">
+                    {{ entry.painLocation }}
+                    </div>
+
+                    @if (entry.hasTakenMedication && entry.medicationName && entry.medicationDosage) {
+                        <p>
+                            Medication taken: {{ entry.medicationName }} — {{ entry.medicationDosage }}.
+                        </p>
+                    } @else {
+                        <p>No medication was taken today.</p>
+                    }
+
+                    <div class="daily-entry-meta">
+                    <span>Intensity: {{ entry.painIntensity }}/10</span>
+                    <span>Energy Level: {{ entry.energyLevel }}/5</span>
+                    <span>Sleep: {{ entry.sleepHours }}h</span>
+                    </div>
+
+                    <div class="daily-entry-date">
+                        Recorded on {{ entry.created_at | date:'fullDate' }}
+                    </div>
+                </div>
+            </article>
+        }
+    </section>
+
+  @if (totalPages > 1) {
+    <div class="pagination-container">
+      <div class="pagination">
+        <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-btn">← Previous</button>
+
+        @for (page of getPages(); track page) {
+          <button class="pagination-btn" [class.active]="page === currentPage" (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        }
+
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-btn">Next →</button>
+      </div>
+
+      <div class="page-info">
+        Page {{ currentPage }} of {{ totalPages }} ({{ filteredPainEntries.length }} total)
+      </div>
+    </div>
+  }
+</main>

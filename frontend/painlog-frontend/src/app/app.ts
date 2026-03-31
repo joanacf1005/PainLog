@@ -1,9 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Router } from 'express';
 import { Header } from './shared-across-app/header/header/header';
 import { Footer } from './shared-across-app/footer/footer/footer';
 import { NavMenu } from './shared-across-app/nav-menu/nav-menu/nav-menu';
+import { AuthState } from './auth/auth-state/auth-state';
 
 @Component({
   selector: 'app-root',
@@ -13,5 +13,5 @@ import { NavMenu } from './shared-across-app/nav-menu/nav-menu/nav-menu';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('painlog-frontend');
+  authState = inject(AuthState);
 }

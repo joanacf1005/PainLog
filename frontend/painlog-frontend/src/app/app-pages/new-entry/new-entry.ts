@@ -6,6 +6,33 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../auth/supabase';
 
+export interface PainEntry {
+    id: string;
+    painLocation: string;
+    painIntensity: number;
+    painType: string;
+    hasTakenMedication: boolean;
+    energyLevel: number;
+    sleepHours: number;
+    notes: string | null;
+    created_at?: string;
+    userId?: string;
+}
+
+export interface Medication {
+  id: string;
+  name: string;
+  dosage: string;
+  created_at?: string;
+}
+
+export interface MedicationEntry {
+  id: string;
+  medicationId: string;
+  painEntriesId: string;
+  created_at?: string;
+}
+
 @Component({
   selector: 'app-new-entry',
   standalone: true,
