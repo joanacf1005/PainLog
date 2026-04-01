@@ -1,0 +1,93 @@
+.kpis-section {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.kpi-card {
+  background: var(--background-card);
+  border: 1px solid rgba(127, 144, 164, 0.18);
+  border-radius: 18px;
+  padding: 16px 18px;
+  min-height: 96px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  border-color: rgba(111, 159, 195, 0.28);
+}
+
+.kpi-card h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.kpi-card h4 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-secondary);
+}
+
+.kpi-card h4.pain-zero {
+  color: var(--pain-zero);
+}
+
+.kpi-card h4.pain-low {
+  color: var(--pain-low);
+}
+
+.kpi-card h4.pain-medium {
+  color: var(--pain-medium);
+}
+
+.kpi-card h4.pain-high {
+  color: var(--pain-high);
+}
+
+.kpi-card h4.kpi-low {
+  color: var(--pain-low);
+}
+
+.kpi-card h4.kpi-medium {
+  color: var(--pain-medium);
+}
+
+.kpi-card h4.kpi-high {
+  color: var(--pain-high);
+}
+
+.kpi-card h4.kpi-zero {
+  color: var(--pain-zero);
+}
+
+.kpi-card h4.kpi-neutral {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 960px) {
+  .kpis-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .kpi-card {
+    padding: 15px 16px;
+    min-height: 88px;
+  }
+}

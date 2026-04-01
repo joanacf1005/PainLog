@@ -1,0 +1,136 @@
+<div class="details-page">
+  <a routerLink="/homepage" class="back-link">← Back to Home</a>
+
+  @if (loading) {
+    <section class="details-card loading-card">
+      <div class="details-header">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-subtitle"></div>
+      </div>
+
+      <div class="details-grid">
+        <div class="skeleton-item">
+          <div class="skeleton-label"></div>
+          <div class="skeleton-value"></div>
+        </div>
+
+        <div class="skeleton-item">
+          <div class="skeleton-label"></div>
+          <div class="skeleton-badge"></div>
+        </div>
+
+        <div class="skeleton-item">
+          <div class="skeleton-label"></div>
+          <div class="skeleton-value"></div>
+        </div>
+
+        <div class="skeleton-item">
+          <div class="skeleton-label"></div>
+          <div class="skeleton-badge"></div>
+        </div>
+
+        <div class="skeleton-item">
+          <div class="skeleton-label"></div>
+          <div class="skeleton-value"></div>
+        </div>
+
+        <div class="skeleton-item">
+          <div class="skeleton-label"></div>
+          <div class="skeleton-value"></div>
+        </div>
+      </div>
+
+      <div class="details-description">
+        <div class="skeleton-section-title"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+      </div>
+    </section>
+  } @else if (errorMessage) {
+    <section class="details-card">
+      <p class="error-message">{{ errorMessage }}</p>
+    </section>
+  } @else if (entry) {
+    <section class="details-card">
+      <div class="details-header">
+        <h1 class="details-title">Pain Entry Details</h1>
+        <p class="details-subtitle">Entry ID: {{ entry.id }}</p>
+      </div>
+
+      <div class="details-grid">
+        <div class="details-item">
+          <span class="details-label">Pain Location</span>
+          <span class="details-value">{{ entry.painLocation }}</span>
+        </div>
+
+        <div class="details-item">
+          <span class="details-label">Pain Intensity</span>
+          <span class="details-value intensity-pill" [ngClass]="getIntensityClass(entry.painIntensity)">
+            {{ entry.painIntensity }}/10
+          </span>
+        </div>
+
+        <div class="details-item">
+          <span class="details-label">Pain Type</span>
+          <span class="details-value">{{ entry.painType }}</span>
+        </div>
+
+        <div class="details-item">
+          <span class="details-label">Medication Taken</span>
+          <span
+            class="status-badge"
+            [ngClass]="entry.hasTakenMedication ? 'status-yes' : 'status-no'"
+          >
+            {{ entry.hasTakenMedication ? 'Yes' : 'No' }}
+          </span>
+        </div>
+
+        <div class="details-item">
+          <span class="details-label">Energy Level</span>
+          <span class="details-value intensity-pill" [ngClass]="getEnergyClass(entry.energyLevel)">
+            {{ entry.energyLevel }}/5
+          </span>
+        </div>
+
+        <div class="details-item">
+          <span class="details-label">Sleep Hours</span>
+          <span class="details-value">{{ entry.sleepHours }}h</span>
+        </div>
+
+        @if (entry.created_at) {
+          <div class="details-item">
+            <span class="details-label">Created At</span>
+            <span class="details-value">{{ entry.created_at | date:'dd MMMM yyyy' }}</span>
+          </div>
+        }
+      </div>
+
+      @if (entry.notes) {
+        <div class="details-description">
+          <h2 class="section-title">Notes</h2>
+          <p>{{ entry.notes }}</p>
+        </div>
+      }
+
+      <div class="details-actions">
+        <a [routerLink]="['/edit-entry', entry.id]" class="btn-edit">Edit Entry</a>
+        <button type="button" class="delete-entry-btn" (click)="openDeleteModal()">Delete Entry</button>
+      </div>
+    </section>
+  }
+  
+
+  @if (showDeleteModal) {
+    <div class="modal-backdrop" (click)="closeDeleteModal()">
+      <div class="delete-modal" (click)="$event.stopPropagation()">
+        <h3>Delete entry?</h3>
+        <p>This action cannot be undone.</p>
+
+        <div class="modal-actions">
+          <button type="button" class="modal-cancel-btn" (click)="closeDeleteModal()">Cancel</button>
+          <button type="button" class="modal-delete-btn" (click)="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

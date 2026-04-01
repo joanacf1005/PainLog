@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../../../auth/supabase';
+import { AuthState } from '../../../auth/auth-state/auth-state';
 
 @Component({
   selector: 'app-header',
@@ -11,11 +12,23 @@ import { SupabaseService } from '../../../auth/supabase';
 export class Header {
   private supabaseService = inject(SupabaseService);
   private router = inject(Router);
+  private authState = inject(AuthState);
 
   isDarkMode = false;
+  showLogoutModal = false;
 
-  async logout() {
+  openLogoutModal(): void {
+    this.showLogoutModal = true;
+  }
+
+  closeLogoutModal(): void {
+    this.showLogoutModal = false;
+  }
+
+  async confirmLogout(): Promise<void> {
     await this.supabaseService.signOut();
+    this.authState.setLoggedIn(false);
+    this.showLogoutModal = false;
     await this.router.navigate(['/login']);
   }
 

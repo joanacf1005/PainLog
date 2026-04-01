@@ -11,6 +11,7 @@ import { AuthState } from '../auth-state/auth-state';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
+
 export class Login {
   private fb = inject(FormBuilder);
   private supabase = inject(SupabaseService);
@@ -46,7 +47,7 @@ export class Login {
         return;
       }
 
-      this.authState.isLoggedIn.set(true);
+      this.authState.setLoggedIn(true);
       await this.router.navigate(['/homepage']);
     } catch (error: any) {
       this.errorMessage = error?.message ?? 'Login error';
