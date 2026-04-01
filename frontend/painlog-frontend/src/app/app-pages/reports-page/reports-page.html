@@ -11,9 +11,12 @@
       <div class="filter-group">
         <button type="button" class="filter-btn" [class.active]="currentFilter === 'all'" (click)="setFilter('all')">All</button>
         <button type="button" class="filter-btn" [class.active]="currentFilter === 'painLocation'" (click)="setFilter('painLocation')">Location A-Z</button>
-        <button type="button" class="filter-btn" [class.active]="currentFilter === 'painType'" (click)="setFilter('painType')">Type A-Z</button>
+        <!-- <button type="button" class="filter-btn" [class.active]="currentFilter === 'painType'" (click)="setFilter('painType')">Type A-Z</button> -->
         <button type="button" class="filter-btn" [class.active]="currentFilter === 'painIntensity'" (click)="setFilter('painIntensity')">Highest Intensity</button>
         <button type="button" class="filter-btn" [class.active]="currentFilter === 'hasMedication'" (click)="setFilter('hasMedication')">With Medication</button>
+        <div class="search-box">
+            <input type="text"placeholder="Search entries..."[(ngModel)]="searchTerm"(input)="onSearchChange()"/>
+        </div>
       </div>
     </div>
   </section>
@@ -83,29 +86,23 @@
     <section class="pain-entries-grid">
         @for (entry of currentPainEntries; track entry.id) {
             <article class="daily-entry-hero">
-                <div class="daily-entry-content">
-                    <div class="daily-entry-badge">
-                    {{ entry.painLocation }}
-                    </div>
+            <div class="daily-entry-content">
+                <div class="daily-entry-badge">{{ entry.painLocation }} pain</div>
 
-                    @if (entry.hasTakenMedication && entry.medicationName && entry.medicationDosage) {
-                        <p>
-                            Medication taken: {{ entry.medicationName }} — {{ entry.medicationDosage }}.
-                        </p>
-                    } @else {
-                        <p>No medication was taken today.</p>
-                    }
-
-                    <div class="daily-entry-meta">
-                    <span>Intensity: {{ entry.painIntensity }}/10</span>
-                    <span>Energy Level: {{ entry.energyLevel }}/5</span>
-                    <span>Sleep: {{ entry.sleepHours }}h</span>
-                    </div>
-
-                    <div class="daily-entry-date">
-                        Recorded on {{ entry.created_at | date:'fullDate' }}
-                    </div>
+                <div class="daily-entry-meta">
+                  <span class="intensity-pill" [ngClass]="getIntensityClass(entry.painIntensity)">
+                      Intensity: {{ entry.painIntensity }}/10
+                  </span>
+                  
                 </div>
+
+                <!-- <div class="pain-type">Pain type: {{ entry.painType }}</div> -->
+                <p>{{ entry.medicationText }}</p>
+
+                <div class="daily-entry-date">
+                Recorded on {{ entry.created_at | date:'dd-MM-yyyy' }}
+                </div>
+            </div>
             </article>
         }
     </section>

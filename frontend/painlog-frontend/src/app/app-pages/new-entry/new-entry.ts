@@ -192,6 +192,8 @@ export class NewEntry implements OnInit {
         return;
       }
 
+      let createdMedicationId: string | null = null;
+
       if (hasTakenMedication) {
         const name = String(raw.name ?? '').trim();
         const dosage = String(raw.dosage ?? '').trim();
@@ -201,13 +203,19 @@ export class NewEntry implements OnInit {
           return;
         }
 
-        await firstValueFrom(
+        const medicationResponse: any = await firstValueFrom(
           this.http.post(
             'http://localhost:3000/api/medication',
             { name, dosage },
             { headers }
           )
         );
+
+        createdMedicationId =
+          medicationResponse?.id ||
+          medicationResponse?.data?.id ||
+          medicationResponse?.medication?.id ||
+          null;
       }
 
       const painEntryPayload = {
@@ -220,6 +228,8 @@ export class NewEntry implements OnInit {
         notes: notes || null,
       };
 
+      let createdPainEntryId: string | null = this.entryId;
+
       if (this.isEditMode && this.entryId) {
         await firstValueFrom(
           this.http.put(
@@ -229,10 +239,29 @@ export class NewEntry implements OnInit {
           )
         );
       } else {
-        await firstValueFrom(
+        const painResponse: any = await firstValueFrom(
           this.http.post(
             'http://localhost:3000/api/pain-entries',
             painEntryPayload,
+            { headers }
+          )
+        );
+
+        createdPainEntryId =
+          painResponse?.id ||
+          painResponse?.data?.id ||
+          painResponse?.painEntry?.id ||
+          null;
+      }
+
+      if (hasTakenMedication && createdPainEntryId && createdMedicationId) {
+        await firstValueFrom(
+          this.http.post(
+            'http://localhost:3000/api/medication-entries',
+            {
+              painEntriesId: createdPainEntryId,
+              medicationId: createdMedicationId,
+            },
             { headers }
           )
         );

@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import {AuthChangeEvent, createClient, Session, SupabaseClient } from '@supabase/supabase-js';
+import {
+  AuthChangeEvent,
+  createClient,
+  Session,
+  SupabaseClient,
+} from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -57,7 +62,7 @@ export class SupabaseService {
     return this.supabase;
   }
 
-  async getTodaysPainEntry(userId: string) {
+  async getTodaysPainEntryWithMedication(userId: string) {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -66,7 +71,17 @@ export class SupabaseService {
 
     return await this.supabase
       .from('PainEntries')
-      .select('*')
+      .select(`
+        *,
+        MedicationEntries (
+          medicationId,
+          Medication (
+            id,
+            name,
+            dosage
+          )
+        )
+      `)
       .eq('userId', userId)
       .gte('created_at', startOfDay.toISOString())
       .lte('created_at', endOfDay.toISOString())
@@ -79,5 +94,20 @@ export class SupabaseService {
       .from('PainEntries')
       .delete()
       .eq('id', id);
+  }
+
+  getMedicationEntries() {
+    return this.supabase.from('MedicationEntries').select('*');
+  }
+
+  getMedications() {
+    return this.supabase.from('Medication').select('*');
+  }
+
+  getMedicationEntriesByPainEntryId(painEntryId: string) {
+    return this.supabase
+      .from('MedicationEntries')
+      .select('*')
+      .eq('painEntriesId', painEntryId);
   }
 }
