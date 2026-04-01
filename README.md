@@ -10,7 +10,7 @@ This project aligns with SDG 3 - Good Health and Well-Being, because it supports
 
 ## Homepage Screenshot
 
-![alt text](image.png)
+![Homepage screenshot](frontend\painlog-frontend\public\assetshomepage.jpeg)
 
 ## Tech Stack
 
