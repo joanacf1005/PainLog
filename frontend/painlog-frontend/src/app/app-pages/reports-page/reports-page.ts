@@ -1,10 +1,12 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../auth/supabase';
 import { PainEntry, Medication, MedicationEntry } from '../new-entry/new-entry';
+import { DetailsPage } from '../details-page/details-page';
+import { RouterLink } from '@angular/router';
 
 enum PainEntryFilter {
   ALL = 'all',
@@ -23,15 +25,15 @@ export interface ReportPainEntry extends PainEntry {
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './reports-page.html',
   styleUrl: './reports-page.css',
 })
 export class ReportsPage implements OnInit {
   private http = inject(HttpClient);
   private supabase = inject(SupabaseService);
+  private cdr = inject(ChangeDetectorRef);
 
-  
   allEntries: ReportPainEntry[] = [];
   filteredPainEntries: ReportPainEntry[] = [];
   loading = false;
@@ -63,6 +65,7 @@ export class ReportsPage implements OnInit {
 
     if (userError || !userData.user) {
       this.errorMessage = 'User not authenticated';
+      this.cdr.detectChanges();
       return null;
     }
 
@@ -71,6 +74,7 @@ export class ReportsPage implements OnInit {
 
     if (!accessToken) {
       this.errorMessage = 'No session found';
+      this.cdr.detectChanges();
       return null;
     }
 
@@ -82,6 +86,7 @@ export class ReportsPage implements OnInit {
   private async loadPainEntries(): Promise<void> {
     this.loading = true;
     this.errorMessage = '';
+    this.cdr.detectChanges();
 
     try {
       const headers = await this.getAuthHeaders();
@@ -101,7 +106,6 @@ export class ReportsPage implements OnInit {
         const medication = relation
           ? medications.find(m => String(m.id) === String(relation.medicationId))
           : undefined;
-
 
         const medicationName = medication?.name ?? null;
         const medicationDosage = medication?.dosage ?? null;
@@ -137,6 +141,7 @@ export class ReportsPage implements OnInit {
         'Error loading pain entries';
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -157,9 +162,6 @@ export class ReportsPage implements OnInit {
       case PainEntryFilter.PAININTENSITY:
         entries.sort((a, b) => b.painIntensity - a.painIntensity);
         break;
-      // case PainEntryFilter.PAINTYPE:
-      //   entries.sort((a, b) => a.painType.localeCompare(b.painType));
-      //   break;
       case PainEntryFilter.PAINLOCATION:
         entries.sort((a, b) => a.painLocation.localeCompare(b.painLocation));
         break;
@@ -173,6 +175,7 @@ export class ReportsPage implements OnInit {
 
     this.filteredPainEntries = entries;
     this.currentPage = 1;
+    this.cdr.detectChanges();
   }
 
   setFilter(filter: string): void {
@@ -187,18 +190,21 @@ export class ReportsPage implements OnInit {
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
+      this.cdr.detectChanges();
     }
   }
 
   prevPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
+      this.cdr.detectChanges();
     }
   }
 
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
+      this.cdr.detectChanges();
     }
   }
 

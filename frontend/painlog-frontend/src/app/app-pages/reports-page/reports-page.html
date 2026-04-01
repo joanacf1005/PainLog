@@ -1,129 +1,124 @@
 <main class="pain-entries-page">
-  <section class="page-header">
-    <div>
-      <h1>Pain Entries</h1>
-      <p>Browse your pain history, filter records, and search by text.</p>
-    </div>
-  </section>
-
-  <section class="filters-container">
-    <div class="filters-desktop">
-      <div class="filter-group">
-        <button type="button" class="filter-btn" [class.active]="currentFilter === 'all'" (click)="setFilter('all')">All</button>
-        <button type="button" class="filter-btn" [class.active]="currentFilter === 'painLocation'" (click)="setFilter('painLocation')">Location A-Z</button>
-        <!-- <button type="button" class="filter-btn" [class.active]="currentFilter === 'painType'" (click)="setFilter('painType')">Type A-Z</button> -->
-        <button type="button" class="filter-btn" [class.active]="currentFilter === 'painIntensity'" (click)="setFilter('painIntensity')">Highest Intensity</button>
-        <button type="button" class="filter-btn" [class.active]="currentFilter === 'hasMedication'" (click)="setFilter('hasMedication')">With Medication</button>
-        <div class="search-box">
-            <input type="text"placeholder="Search entries..."[(ngModel)]="searchTerm"(input)="onSearchChange()"/>
-        </div>
+  @if (loading) {
+    <section class="page-header skeleton-card">
+      <div>
+        <div class="skeleton-title"></div>
+        <div class="skeleton-subtitle"></div>
       </div>
-    </div>
-  </section>
- 
-   <!-- <div class="filters-mobile">
-    <button type="button" class="filters-toggle" (click)="filtersOpen = !filtersOpen">
-      Filters
-      <span>{{ filtersOpen ? '▲' : '▼' }}</span>
-    </button>
-
-
-    @if (filtersOpen) {
-      <div class="filters-dropdown">
-        <button
-          type="button"
-          class="filter-btn"
-          [class.active]="currentFilter === 'all'"
-          (click)="setFilter('all')"
-        >
-          All
-        </button>
-
-
-        <button
-          type="button"
-          class="filter-btn"
-          [class.active]="currentFilter === 'painLocation'"
-          (click)="setFilter('painLocation')"
-        >
-          Location
-        </button>
-
-
-        <button
-          type="button"
-          class="filter-btn"
-          [class.active]="currentFilter === 'painType'"
-          (click)="setFilter('painType')"
-        >
-          Type
-        </button>
-
-
-        <button
-          type="button"
-          class="filter-btn"
-          [class.active]="currentFilter === 'painIntensity'"
-          (click)="setFilter('painIntensity')"
-        >
-          Intensity
-        </button>
-
-
-        <button
-          type="button"
-          class="filter-btn"
-          [class.active]="currentFilter === 'hasMedication'"
-          (click)="setFilter('hasMedication')"
-        >
-          Medication
-        </button>
-      </div>
-    }
-  </div>
-</section> -->
-
-    <section class="pain-entries-grid">
-        @for (entry of currentPainEntries; track entry.id) {
-            <article class="daily-entry-hero">
-            <div class="daily-entry-content">
-                <div class="daily-entry-badge">{{ entry.painLocation }} pain</div>
-
-                <div class="daily-entry-meta">
-                  <span class="intensity-pill" [ngClass]="getIntensityClass(entry.painIntensity)">
-                      Intensity: {{ entry.painIntensity }}/10
-                  </span>
-                  
-                </div>
-
-                <!-- <div class="pain-type">Pain type: {{ entry.painType }}</div> -->
-                <p>{{ entry.medicationText }}</p>
-
-                <div class="daily-entry-date">
-                Recorded on {{ entry.created_at | date:'dd-MM-yyyy' }}
-                </div>
-            </div>
-            </article>
-        }
     </section>
 
-  @if (totalPages > 1) {
-    <div class="pagination-container">
+    <section class="filters-container skeleton-card">
+      <div class="filters-desktop">
+        <div class="filter-group skeleton-filter-group">
+          <div class="skeleton-filter-btn"></div>
+          <div class="skeleton-filter-btn"></div>
+          <div class="skeleton-filter-btn"></div>
+          <div class="skeleton-filter-btn"></div>
+          <div class="skeleton-search"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pain-entries-grid">
+      @for (item of [1,2,3,4,5,6]; track item) {
+        <article class="daily-entry-hero skeleton-report-card">
+          <div class="daily-entry-content">
+            <div class="daily-entry-badge skeleton-badge"></div>
+
+            <div class="daily-entry-meta">
+              <div class="skeleton-pill"></div>
+            </div>
+
+            <div class="skeleton-line wide"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line short"></div>
+
+            <div class="skeleton-date"></div>
+          </div>
+        </article>
+      }
+    </section>
+
+    <div class="pagination-container skeleton-card">
       <div class="pagination">
-        <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-btn">← Previous</button>
-
-        @for (page of getPages(); track page) {
-          <button class="pagination-btn" [class.active]="page === currentPage" (click)="goToPage(page)">
-            {{ page }}
-          </button>
-        }
-
-        <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-btn">Next →</button>
+        <div class="skeleton-page-btn"></div>
+        <div class="skeleton-page-btn"></div>
+        <div class="skeleton-page-btn"></div>
+        <div class="skeleton-page-btn"></div>
       </div>
 
       <div class="page-info">
-        Page {{ currentPage }} of {{ totalPages }} ({{ filteredPainEntries.length }} total)
+        <div class="skeleton-page-info"></div>
       </div>
     </div>
+  } @else {
+    <section class="page-header">
+      <div>
+        <h1>Pain Entries</h1>
+        <p>Browse your pain history, filter records, and search by text.</p>
+      </div>
+    </section>
+
+    <section class="filters-container">
+      <div class="filters-desktop">
+        <div class="filter-group">
+          <button type="button" class="filter-btn" [class.active]="currentFilter === 'all'" (click)="setFilter('all')">All</button>
+          <button type="button" class="filter-btn" [class.active]="currentFilter === 'painLocation'" (click)="setFilter('painLocation')">Location A-Z</button>
+          <button type="button" class="filter-btn" [class.active]="currentFilter === 'painIntensity'" (click)="setFilter('painIntensity')">Highest Intensity</button>
+          <button type="button" class="filter-btn" [class.active]="currentFilter === 'hasMedication'" (click)="setFilter('hasMedication')">With Medication</button>
+
+          <div class="search-box">
+            <input type="text" placeholder="Search entries..." [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pain-entries-grid">
+      @for (entry of currentPainEntries; track entry.id) {
+        <article class="daily-entry-hero">
+          <a [routerLink]="['/details-page', entry.id]" class="pain-entry-link"></a>
+          <div class="daily-entry-content">
+            <div class="daily-entry-badge">{{ entry.painLocation }} pain</div>
+
+            <div class="daily-entry-meta">
+              <span class="intensity-pill" [ngClass]="getIntensityClass(entry.painIntensity)">
+                Intensity: {{ entry.painIntensity }}/10
+              </span>
+            </div>
+
+            <p>{{ entry.medicationText }}</p>
+
+            <div class="daily-entry-date">
+              Recorded on {{ entry.created_at | date:'dd-MM-yyyy' }}
+            </div>
+          </div>
+        </article>
+      }
+    </section>
+
+    @if (totalPages > 1) {
+      <div class="pagination-container">
+        <div class="pagination">
+          <button (click)="prevPage()"[disabled]="currentPage === 1"class="pagination-btn">
+            ← Previous
+          </button>
+
+          @for (page of getPages(); track page) {
+            <button class="pagination-btn"[class.active]="page === currentPage"(click)="goToPage(page)">
+              {{ page }}
+            </button>
+          }
+
+          <button (click)="nextPage()"[disabled]="currentPage === totalPages"class="pagination-btn">
+            Next →
+          </button>
+        </div>
+
+        <div class="page-info">
+          Page {{ currentPage }} of {{ totalPages }} ({{ filteredPainEntries.length }} total)
+        </div>
+      </div>
+    }
   }
 </main>

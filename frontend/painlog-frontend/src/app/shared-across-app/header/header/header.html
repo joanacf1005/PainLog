@@ -16,7 +16,7 @@
       }
     </button>
 
-    <button class="logout-btn" (click)="logout()" aria-label="Logout">
+    <button class="logout-btn" (click)="openLogoutModal()" aria-label="Logout">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
         <path d="M10 17v-2h4v-2h-4v-2l-4 3 4 3zm8-13H8a2 2 0 0 0-2 2v3h2V6h10v12H8v-3H6v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
       </svg>
@@ -24,3 +24,21 @@
     </button>
   </div>
 </header>
+
+@if (showLogoutModal) {
+  <div class="modal-backdrop" (click)="closeLogoutModal()">
+    <div class="logout-modal" (click)="$event.stopPropagation()">
+      <h3>Confirm Logout</h3>
+      <p>Are you sure you want to logout?</p>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-cancel-btn" (click)="closeLogoutModal()">
+          Cancel
+        </button>
+        <button type="button" class="modal-confirm-btn" (click)="confirmLogout()">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+}
