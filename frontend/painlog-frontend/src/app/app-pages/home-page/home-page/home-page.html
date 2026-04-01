@@ -86,9 +86,17 @@
             <p>{{ dailyEntry.medicationText }}</p>
 
             <div class="daily-entry-meta">
-              <span>Intensity: {{ dailyEntry.painIntensity }}/10</span>
-              <span>Energy Level: {{ dailyEntry.energyLevel }}/5</span>
-              <span>Sleep: {{ dailyEntry.sleepHours }}h</span>
+              <span class="intensity-pill" [ngClass]="getIntensityClass(dailyEntry.painIntensity ?? 0)">
+                Intensity: {{ dailyEntry.painIntensity ?? 0 }}/10
+              </span>
+
+              <span class="energy-pill" [ngClass]="getEnergyClass(dailyEntry.energyLevel ?? 0)">
+                Energy Level: {{ dailyEntry.energyLevel ?? 0 }}/5
+              </span>
+
+              <span class="sleep-pill">
+                Sleep: {{ dailyEntry.sleepHours ?? 0 }}h
+              </span>
             </div>
           </div>
 
@@ -106,27 +114,15 @@
       }
     </section>
 
-    <section class="kpis-section">
-      <div class="kpi-card">
-        <h3>Average pain intensity</h3>
-      </div>
+    <app-kpi-cards></app-kpi-cards>
 
-      <div class="kpi-card">
-        <h3>Highest pain this month</h3>
-      </div>
-
-      <div class="kpi-card">
-        <h3>Entries this month</h3>
-      </div>
-    </section>
-
-    <section class="help-section">
+    <!-- <section class="help-section">
       <h3>Helpful articles</h3>
 
       <div class="help-cards">
         <article class="help-card"></article>
       </div>
-    </section>
+    </section> -->
   }
 
   @if (showDeleteModal) {

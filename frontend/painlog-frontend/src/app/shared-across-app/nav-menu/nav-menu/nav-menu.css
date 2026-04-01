@@ -4,6 +4,12 @@
   width: 100%;
 }
 
+.disabled-link {
+    opacity: 0.45;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
 .navigation-menu {
   height: 100vh;
   background: var(--background-card);
