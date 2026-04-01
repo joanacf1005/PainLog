@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../auth/supabase';
 
@@ -10,6 +10,7 @@ import { SupabaseService } from '../../../auth/supabase';
   styleUrl: './home-page.css',
 })
 export class HomePage implements OnInit {
+  loading = true;
   userName = 'User';
   firstName = 'User';
   dailyEntry: any = null;
@@ -24,12 +25,18 @@ export class HomePage implements OnInit {
   });
 
   private supabaseService = inject(SupabaseService);
+  private cdr = inject(ChangeDetectorRef);
 
-  async ngOnInit() {
-    const { data } = await this.supabaseService.getUser();
-    const user = data.user;
+  async ngOnInit(): Promise<void> {
+    try {
+      const { data } = await this.supabaseService.getUser();
+      const user = data.user;
 
-    if (user) {
+      if (!user) {
+        this.dailyEntry = null;
+        return;
+      }
+
       const metadata = user.user_metadata as any;
       this.userName =
         `${metadata.firstName || ''} ${metadata.lastName || ''}`.trim() || 'User';
@@ -54,21 +61,28 @@ export class HomePage implements OnInit {
                 : 'Medication was taken, but the linked medication could not be found.'
               : 'No medication taken.',
         };
+      } else {
+        this.dailyEntry = null;
       }
+    } finally {
+      this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
-  openDeleteModal(id: string) {
+  openDeleteModal(id: string): void {
     this.entryToDeleteId = id;
     this.showDeleteModal = true;
+    this.cdr.detectChanges();
   }
 
-  closeDeleteModal() {
+  closeDeleteModal(): void {
     this.showDeleteModal = false;
     this.entryToDeleteId = null;
+    this.cdr.detectChanges();
   }
 
-  async confirmDelete() {
+  async confirmDelete(): Promise<void> {
     if (!this.entryToDeleteId) return;
 
     const { error } = await this.supabaseService.deletePainEntry(this.entryToDeleteId);
@@ -78,5 +92,6 @@ export class HomePage implements OnInit {
     }
 
     this.closeDeleteModal();
+    this.cdr.detectChanges();
   }
 }

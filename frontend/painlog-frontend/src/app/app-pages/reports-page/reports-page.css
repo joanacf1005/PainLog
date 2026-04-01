@@ -43,14 +43,26 @@
   justify-content: space-between;
 }
 
-.filters-mobile {
-  display: none;
-}
-
 .filter-group {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  align-items: center;
+}
+
+.search-box {
+  flex: 0 0 280px;
+  margin-left: auto;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(127, 144, 164, 0.18);
+  background: var(--background-card);
+  color: var(--text-main);
+  outline: none;
 }
 
 .filter-btn {
@@ -83,6 +95,7 @@
   flex: 1;
   min-width: 240px;
   max-width: 360px;
+  margin-left: auto;
 }
 
 .search-box input {
@@ -109,6 +122,7 @@
 }
 
 .daily-entry-hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -121,6 +135,7 @@
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
   box-sizing: border-box;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
 }
 
 .daily-entry-hero:hover {
@@ -129,9 +144,21 @@
   border-color: rgba(111, 159, 195, 0.28);
 }
 
+.pain-entry-link {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: 18px;
+  text-decoration: none;
+  z-index: 10;
+}
+
 .daily-entry-content {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-width: 0;
+  pointer-events: none;
 }
 
 .daily-entry-badge {
@@ -183,15 +210,6 @@
   font-weight: 700;
   color: #fff;
   border: none;
-}
-
-.pain-type{
-    margin-top: 22px;
-    padding: 18px;
-    background: var(--background-card);
-    border: 1px solid rgba(127, 144, 164, 0.18);
-    border-radius: 18px;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
 .pain-zero {
@@ -259,4 +277,63 @@
   text-align: center;
   color: var(--text-secondary);
   font-size: 0.95rem;
+}
+
+.skeleton-report-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-badge,
+.skeleton-pill,
+.skeleton-line,
+.skeleton-date {
+  border-radius: 12px;
+  background: linear-gradient(90deg, #e6eaf0 25%, #f3f5f8 37%, #e6eaf0 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton-badge {
+  width: 140px;
+  height: 24px;
+  margin-bottom: 14px;
+}
+
+.skeleton-pill {
+  width: 130px;
+  height: 34px;
+}
+
+.skeleton-line {
+  height: 16px;
+  margin-bottom: 10px;
+}
+
+.skeleton-line.wide {
+  width: 92%;
+}
+
+.skeleton-line.medium {
+  width: 72%;
+}
+
+.skeleton-line.short {
+  width: 48%;
+}
+
+.skeleton-date {
+  width: 150px;
+  height: 16px;
+  margin-top: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
 }
