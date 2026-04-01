@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../auth/supabase';
@@ -16,12 +17,13 @@ enum PainEntryFilter {
 export interface ReportPainEntry extends PainEntry {
   medicationName?: string | null;
   medicationDosage?: string | null;
+  medicationText?: string;
 }
 
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './reports-page.html',
   styleUrl: './reports-page.css',
 })
@@ -29,18 +31,21 @@ export class ReportsPage implements OnInit {
   private http = inject(HttpClient);
   private supabase = inject(SupabaseService);
 
+  
   allEntries: ReportPainEntry[] = [];
   filteredPainEntries: ReportPainEntry[] = [];
   loading = false;
   errorMessage = '';
+
   currentFilter: PainEntryFilter = PainEntryFilter.ALL;
+  searchTerm = '';
+  filtersOpen = false;
 
   currentPage = 1;
   itemsPerPage = 6;
-  filtersOpen = false;
 
   get totalPages(): number {
-    return Math.ceil(this.filteredPainEntries.length / this.itemsPerPage);
+    return Math.ceil(this.filteredPainEntries.length / this.itemsPerPage) || 1;
   }
 
   get currentPainEntries(): ReportPainEntry[] {
@@ -63,7 +68,6 @@ export class ReportsPage implements OnInit {
 
     const sessionResult = await this.supabase.getSession();
     const accessToken = sessionResult.data.session?.access_token;
-    console.log('ACCESS TOKEN:', accessToken);
 
     if (!accessToken) {
       this.errorMessage = 'No session found';
@@ -89,31 +93,42 @@ export class ReportsPage implements OnInit {
         firstValueFrom(this.http.get<Medication[]>('http://localhost:3000/api/medication', { headers })),
       ]);
 
-      const medicationMap = new Map<string, Medication>(
-        medications.map(med => [med.id, med])
-      );
-
-      const medicationByPainEntryId = new Map<string, Medication>();
-
-      for (const relation of medicationEntries) {
-        const medication = medicationMap.get(relation.medicationId);
-        if (medication) {
-          medicationByPainEntryId.set(relation.painEntriesId, medication);
-        }
-      }
-
       this.allEntries = painEntries.map(entry => {
-        const medication = medicationByPainEntryId.get(entry.id);
+        const relation = medicationEntries.find(
+          r => String(r.painEntriesId) === String(entry.id)
+        );
+
+        const medication = relation
+          ? medications.find(m => String(m.id) === String(relation.medicationId))
+          : undefined;
+
+
+        const medicationName = medication?.name ?? null;
+        const medicationDosage = medication?.dosage ?? null;
+
+        let medicationText = 'No medication taken.';
+
+        if (entry.hasTakenMedication) {
+          if (medicationName && medicationDosage) {
+            medicationText = `Medication taken: ${medicationName} ${medicationDosage}.`;
+          } else if (medicationName) {
+            medicationText = `Medication taken: ${medicationName}.`;
+          } else if (medicationDosage) {
+            medicationText = `Medication taken: ${medicationDosage}.`;
+          } else {
+            medicationText = 'Medication was taken, but the linked medication could not be found.';
+          }
+        }
 
         return {
           ...entry,
-          medicationName: medication?.name ?? null,
-          medicationDosage: medication?.dosage ?? null,
+          medicationName,
+          medicationDosage,
+          medicationText,
         };
       });
 
-      this.filteredPainEntries = [...this.allEntries];
-      this.currentPage = 1;
+      this.applyFilters();
     } catch (error: any) {
       this.errorMessage =
         error?.error?.error ||
@@ -125,50 +140,60 @@ export class ReportsPage implements OnInit {
     }
   }
 
-  filterPainEntries(filter: string): void {
-    this.currentFilter = filter as PainEntryFilter;
-    this.currentPage = 1;
+  applyFilters(): void {
+    let entries = [...this.allEntries];
+    const term = this.searchTerm.trim().toLowerCase();
 
-    switch (filter) {
-      case 'all':
-        this.filteredPainEntries = [...this.allEntries];
+    if (term) {
+      entries = entries.filter(entry =>
+        entry.painLocation?.toLowerCase().includes(term) ||
+        entry.painType?.toLowerCase().includes(term) ||
+        String(entry.painIntensity).includes(term) ||
+        entry.medicationName?.toLowerCase().includes(term)
+      );
+    }
+
+    switch (this.currentFilter) {
+      case PainEntryFilter.PAININTENSITY:
+        entries.sort((a, b) => b.painIntensity - a.painIntensity);
         break;
-      case 'painIntensity':
-        this.filteredPainEntries = [...this.allEntries].sort(
-          (a, b) => b.painIntensity - a.painIntensity
-        );
+      // case PainEntryFilter.PAINTYPE:
+      //   entries.sort((a, b) => a.painType.localeCompare(b.painType));
+      //   break;
+      case PainEntryFilter.PAINLOCATION:
+        entries.sort((a, b) => a.painLocation.localeCompare(b.painLocation));
         break;
-      case 'painType':
-        this.filteredPainEntries = [...this.allEntries].sort((a, b) =>
-          a.painType.localeCompare(b.painType)
-        );
+      case PainEntryFilter.HASMEDICATION:
+        entries = entries.filter(entry => entry.hasTakenMedication === true);
         break;
-      case 'painLocation':
-        this.filteredPainEntries = [...this.allEntries].sort((a, b) =>
-          a.painLocation.localeCompare(b.painLocation)
-        );
-        break;
-      case 'hasMedication':
-        this.filteredPainEntries = this.allEntries.filter(
-          entry => entry.hasTakenMedication === true
-        );
-        break;
+      case PainEntryFilter.ALL:
       default:
-        this.filteredPainEntries = [...this.allEntries];
         break;
     }
+
+    this.filteredPainEntries = entries;
+    this.currentPage = 1;
   }
 
   setFilter(filter: string): void {
-    this.filterPainEntries(filter);
+    this.currentFilter = filter as PainEntryFilter;
+    this.applyFilters();
+  }
+
+  onSearchChange(): void {
+    this.applyFilters();
   }
 
   nextPage(): void {
-    if (this.currentPage < this.totalPages) this.currentPage++;
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
   }
 
   prevPage(): void {
-    if (this.currentPage > 1) this.currentPage--;
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
   }
 
   goToPage(page: number): void {
@@ -179,5 +204,12 @@ export class ReportsPage implements OnInit {
 
   getPages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  getIntensityClass(intensity: number): string {
+    if (intensity === 0) return 'pain-zero';
+    if (intensity <= 3) return 'pain-low';
+    if (intensity <= 6) return 'pain-medium';
+    return 'pain-high';
   }
 }

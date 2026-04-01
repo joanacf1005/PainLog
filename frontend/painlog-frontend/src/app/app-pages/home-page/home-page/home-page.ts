@@ -16,6 +16,7 @@ export class HomePage implements OnInit {
 
   showDeleteModal = false;
   entryToDeleteId: string | null = null;
+
   todayLabel = new Date().toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'long',
@@ -34,10 +35,25 @@ export class HomePage implements OnInit {
         `${metadata.firstName || ''} ${metadata.lastName || ''}`.trim() || 'User';
       this.firstName = this.userName.split(' ')[0] || 'User';
 
-      const { data: entries, error } = await this.supabaseService.getTodaysPainEntry(user.id);
+      const { data: entries, error } =
+        await this.supabaseService.getTodaysPainEntryWithMedication(user.id);
 
       if (!error && entries && entries.length > 0) {
-        this.dailyEntry = entries[0];
+        const dailyEntry = entries[0];
+        const relation = dailyEntry.MedicationEntries?.[0];
+        const medication = relation?.Medication?.[0];
+
+        this.dailyEntry = {
+          ...dailyEntry,
+          medicationName: medication?.name ?? null,
+          medicationDosage: medication?.dosage ?? null,
+          medicationText:
+            dailyEntry.hasTakenMedication
+              ? medication?.name && medication?.dosage
+                ? `Medication taken: ${medication.name} ${medication.dosage}.`
+                : 'Medication was taken, but the linked medication could not be found.'
+              : 'No medication taken.',
+        };
       }
     }
   }

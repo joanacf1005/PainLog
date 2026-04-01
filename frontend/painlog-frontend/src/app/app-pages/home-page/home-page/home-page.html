@@ -4,16 +4,16 @@
       <div class="daily-entry-hero">
         <div class="daily-entry-content">
           <div class="daily-entry-badge">Today's Entry • {{ todayLabel }}</div>
-            <p>Pain location: {{ dailyEntry.painLocation }}.</p>
-            <P>Pain type: {{ dailyEntry.painType }}.</P>
-            <p>{{ dailyEntry.hasTakenMedication ? 'Medication was taken today.' : 'No medication was taken today.' }}</p>
+
+          <p>Pain location: {{ dailyEntry.painLocation }}.</p>
+          <p>Pain type: {{ dailyEntry.painType }}.</p>
+          <p>{{ dailyEntry.medicationText }}</p>
 
           <div class="daily-entry-meta">
             <span>Intensity: {{ dailyEntry.painIntensity }}/10</span>
             <span>Energy Level: {{ dailyEntry.energyLevel }}/5</span>
             <span>Sleep: {{ dailyEntry.sleepHours }}h</span>
           </div>
-
         </div>
 
         <div class="daily-entry-actions">
