@@ -1,0 +1,22 @@
+<section class="kpis-section">
+  <div class="kpi-card">
+    <h3>Average pain intensity</h3>
+    <h4 [ngClass]="getIntensityClass(stats.avgIntensity)">
+      {{ stats.avgIntensity ?? '—' }}
+    </h4>
+  </div>
+
+  <div class="kpi-card">
+    <h3>Average pain this month</h3>
+    <h4 [ngClass]="getMonthIntensityClass(stats.avgIntPerMonth)">
+      {{ stats.avgIntPerMonth ?? '—' }}
+    </h4>
+  </div>
+
+  <div class="kpi-card">
+    <h3>Total of Entries</h3>
+    <h4 [ngClass]="getEntriesClass(stats.entriesPerMonth)">
+      {{ stats.entriesPerMonth }}
+    </h4>
+  </div>
+</section>
