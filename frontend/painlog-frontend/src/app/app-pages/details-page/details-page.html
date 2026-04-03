@@ -94,7 +94,7 @@
 
         <div class="details-item">
           <span class="details-label">Sleep Hours</span>
-          <span class="details-value">{{ entry.sleepHours }}h</span>
+          <span class="details-value sleep-pill" [ngClass]="getSleepClass(entry.sleepHours)">{{ entry.sleepHours }}h</span>
         </div>
 
         @if (entry.created_at) {

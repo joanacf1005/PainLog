@@ -53,7 +53,7 @@ export class NewEntry implements OnInit {
   entryId: string | null = null;
 
   form = this.fb.group({
-    painLocation: ['', [Validators.required, Validators.minLength(3)]],
+    painLocation: ['', [Validators.required, Validators.minLength(2)]],
     painIntensity: ['', [Validators.required]],
     painType: ['', [Validators.required]],
     hasTakenMedication: [false],

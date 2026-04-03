@@ -94,7 +94,7 @@
                 Energy Level: {{ dailyEntry.energyLevel ?? 0 }}/5
               </span>
 
-              <span class="sleep-pill">
+              <span class="sleep-pill" [ngClass]="getSleepClass(dailyEntry.sleepHours ?? 0)">
                 Sleep: {{ dailyEntry.sleepHours ?? 0 }}h
               </span>
             </div>

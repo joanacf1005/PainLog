@@ -112,6 +112,17 @@ export class DetailsPage implements OnInit {
     return 'energy-high';
   }
 
+  getSleepClass(value?: number | null): string {
+    const safeValue = value ?? 0;
+
+    if (safeValue < 5) return 'sleep-low';
+    if (safeValue >= 5 && safeValue <= 6) return 'sleep-medium-low';
+    if (safeValue > 6 && safeValue <= 7) return 'sleep-medium';
+    if (safeValue > 7 && safeValue <= 9) return 'sleep-good';
+    if (safeValue > 9 && safeValue <= 10) return 'sleep-medium';
+    return 'sleep-medium-low';
+  }
+
   openDeleteModal(): void {
     this.showDeleteModal = true;
     this.cdr.detectChanges();

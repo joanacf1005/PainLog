@@ -225,6 +225,35 @@
   color: var(--error);
 }
 
+.sleep-pill {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.sleep-low {
+  background: rgba(201, 122, 122, 0.18);
+  color: var(--pain-high);
+}
+
+.sleep-medium-low {
+  background: rgba(212, 163, 115, 0.18);
+  color: var(--pain-medium);
+}
+
+.sleep-medium {
+  background: rgba(190, 173, 118, 0.18);
+  color: var(--pain-low);
+}
+
+.sleep-good {
+  background: rgba(123, 201, 126, 0.18);
+  color: var(--pain-zero);
+}
+
 /* Loading skeleton */
 .loading-card {
   position: relative;
