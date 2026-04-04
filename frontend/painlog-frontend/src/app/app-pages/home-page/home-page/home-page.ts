@@ -1,22 +1,19 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../../auth/supabase';
 import { EntriesStats, KpiCards } from '../../../shared-across-app/kpi-cards/kpi-cards';
+import { PainEntry, Medication, MedicationEntry } from '../../new-entry/new-entry';
 
-interface DailyEntryView {
-  id: string;
-  painIntensity?: number | null;
-  painType?: string | null;
-  painLocation?: string | null;
-  hasTakenMedication?: boolean | null;
-  created_at?: string | null;
+type DailyEntryView = Omit<PainEntry, 'energyLevel' | 'sleepHours'> & {
+  energyLevel?: number | null;
+  sleepHours?: number | null;
   medicationName?: string | null;
   medicationDosage?: string | null;
   medicationText?: string;
-  energyLevel?: number | null;
-  sleepHours?: number | null;
-}
+};
 
 @Component({
   selector: 'app-home-page',
@@ -46,6 +43,7 @@ export class HomePage implements OnInit {
     year: 'numeric',
   });
 
+  private http = inject(HttpClient);
   private supabaseService = inject(SupabaseService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -53,8 +51,40 @@ export class HomePage implements OnInit {
     await this.loadDailyEntry();
   }
 
+  private async getAuthHeaders(): Promise<HttpHeaders | null> {
+    const { data: userData, error: userError } = await this.supabaseService.getUser();
+
+    if (userError || !userData.user) {
+      return null;
+    }
+
+    const sessionResult = await this.supabaseService.getSession();
+    const accessToken = sessionResult.data.session?.access_token;
+
+    if (!accessToken) {
+      return null;
+    }
+
+    return new HttpHeaders({
+      Authorization: `Bearer ${accessToken}`,
+    });
+  }
+
+  private isSameDay(date1: string | Date | null | undefined, date2: Date): boolean {
+    if (!date1) return false;
+
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+
+    d1.setHours(0, 0, 0, 0);
+    d2.setHours(0, 0, 0, 0);
+
+    return d1.getTime() === d2.getTime();
+  }
+
   private async loadDailyEntry(): Promise<void> {
     this.loading = true;
+    this.cdr.markForCheck();
 
     try {
       const { data, error } = await this.supabaseService.getUser();
@@ -71,20 +101,60 @@ export class HomePage implements OnInit {
         `${metadata.firstName || ''} ${metadata.lastName || ''}`.trim() || 'User';
       this.firstName = this.userName.split(' ')[0] || 'User';
 
-      const { data: entries, error: entriesError } =
-        await this.supabaseService.getTodaysPainEntry(user.id);
-
-      if (entriesError || !entries || entries.length === 0) {
+      const headers = await this.getAuthHeaders();
+      if (!headers) {
         this.dailyEntry = null;
         return;
       }
 
-      const entry = entries[0];
+      const [painEntries, medicationEntries, medications] = await Promise.all([
+        firstValueFrom(this.http.get<PainEntry[]>('http://localhost:3000/api/pain-entries', { headers })),
+        firstValueFrom(this.http.get<MedicationEntry[]>('http://localhost:3000/api/medication-entries', { headers })),
+        firstValueFrom(this.http.get<Medication[]>('http://localhost:3000/api/medication', { headers })),
+      ]);
+
+      const today = new Date();
+
+      const todaysEntry = painEntries
+        .filter(entry => String(entry.userId) === String(user.id))
+        .filter(entry => this.isSameDay(entry.created_at, today))
+        .sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime())[0];
+
+      if (!todaysEntry) {
+        this.dailyEntry = null;
+        return;
+      }
+
+      const relation = medicationEntries.find(
+        r => String(r.painEntriesId) === String(todaysEntry.id)
+      );
+
+      const medication = relation
+        ? medications.find(m => String(m.id) === String(relation.medicationId))
+        : undefined;
+
+      const medicationName = medication?.name ?? null;
+      const medicationDosage = medication?.dosage ?? null;
+
+      let medicationText = 'No medication taken.';
+
+      if (todaysEntry.hasTakenMedication) {
+        if (medicationName && medicationDosage) {
+          medicationText = `Medication taken: ${medicationName} ${medicationDosage}.`;
+        } else if (medicationName) {
+          medicationText = `Medication taken: ${medicationName}.`;
+        } else if (medicationDosage) {
+          medicationText = `Medication taken: ${medicationDosage}.`;
+        } else {
+          medicationText = 'Medication was taken, but the linked medication could not be found.';
+        }
+      }
+
       this.dailyEntry = {
-        ...entry,
-        medicationText: entry.hasTakenMedication
-          ? 'Medication taken.'
-          : 'No medication taken.',
+        ...todaysEntry,
+        medicationName,
+        medicationDosage,
+        medicationText,
       };
     } finally {
       this.loading = false;

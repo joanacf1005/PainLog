@@ -23,6 +23,7 @@ export class KpiCards implements OnInit {
   private supabase = inject(SupabaseService);
   private cdr = inject(ChangeDetectorRef);
 
+  loading = true;
   entries: PainEntry[] = [];
 
   stats: EntriesStats = {
@@ -32,11 +33,18 @@ export class KpiCards implements OnInit {
   };
 
   async ngOnInit(): Promise<void> {
-    await this.loadEntries();
-    this.stats.avgIntensity = this.calcAvgIntensity();
-    this.stats.entriesPerMonth = this.calcTotalEntries();
-    this.stats.avgIntPerMonth = this.calcAvgIntensityPerMonth();
+    this.loading = true;
     this.cdr.detectChanges();
+
+    try {
+      await this.loadEntries();
+      this.stats.avgIntensity = this.calcAvgIntensity();
+      this.stats.entriesPerMonth = this.calcTotalEntries();
+      this.stats.avgIntPerMonth = this.calcAvgIntensityPerMonth();
+    } finally {
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
   }
 
   private async getAuthHeaders(): Promise<HttpHeaders | null> {
@@ -111,12 +119,5 @@ export class KpiCards implements OnInit {
     if (value <= 3) return 'pain-low';
     if (value <= 6) return 'pain-medium';
     return 'pain-high';
-  }
-
-  getEntriesClass(value: number): string {
-    if (value === 0) return 'kpi-zero';
-    if (value <= 5) return 'kpi-low';
-    if (value <= 10) return 'kpi-medium';
-    return 'kpi-high';
   }
 }

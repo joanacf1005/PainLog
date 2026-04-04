@@ -11,6 +11,7 @@ import { SupabaseService } from '../../../auth/supabase';
 })
 export class NavMenu implements OnInit, OnDestroy {
   userName = 'User';
+  loading = true;
 
   private supabaseService = inject(SupabaseService);
   private cdr = inject(ChangeDetectorRef);
@@ -18,10 +19,17 @@ export class NavMenu implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     await this.loadUserFromSession();
+    this.loading = false;
     this.cdr.detectChanges();
 
     this.authSubscription = this.supabaseService.onAuthStateChange(() => {
-      this.loadUserFromSession().then(() => this.cdr.detectChanges());
+      this.loading = true;
+      this.cdr.detectChanges();
+
+      this.loadUserFromSession().then(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      });
     });
   }
 
