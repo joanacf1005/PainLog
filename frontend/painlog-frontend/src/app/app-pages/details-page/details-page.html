@@ -77,12 +77,14 @@
 
         <div class="details-item">
           <span class="details-label">Medication Taken</span>
-          <span
-            class="status-badge"
-            [ngClass]="entry.hasTakenMedication ? 'status-yes' : 'status-no'"
-          >
-            {{ entry.hasTakenMedication ? 'Yes' : 'No' }}
-          </span>
+          @if (entry.medicationName || entry.medicationDosage) {
+            <span class="details-value">
+              {{ entry.medicationName }}
+              {{ entry.medicationDosage }}
+            </span>
+          } @else {
+            <span class="details-value">No medication taken</span>
+          }
         </div>
 
         <div class="details-item">
@@ -94,7 +96,9 @@
 
         <div class="details-item">
           <span class="details-label">Sleep Hours</span>
-          <span class="details-value sleep-pill" [ngClass]="getSleepClass(entry.sleepHours)">{{ entry.sleepHours }}h</span>
+          <span class="details-value sleep-pill" [ngClass]="getSleepClass(entry.sleepHours)">
+            {{ entry.sleepHours }}h
+          </span>
         </div>
 
         @if (entry.created_at) {
@@ -118,7 +122,6 @@
       </div>
     </section>
   }
-  
 
   @if (showDeleteModal) {
     <div class="modal-backdrop" (click)="closeDeleteModal()">

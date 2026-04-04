@@ -40,53 +40,30 @@
   font-size: 2rem;
   font-weight: 800;
   line-height: 1;
+  color: var(--text-secondary);
 }
 
-.kpi-card h4.pain-zero {
-  color: var(--pain-zero);
-}
+.kpi-card h4.sleep-low { color: var(--pain-high); }
+.kpi-card h4.sleep-medium-low { color: var(--pain-medium); }
+.kpi-card h4.sleep-medium { color: var(--pain-low); }
+.kpi-card h4.sleep-good { color: var(--pain-zero); }
 
-.kpi-card h4.pain-low {
-  color: var(--pain-low);
-}
+.kpi-card h4.energy-low { color: var(--pain-high); }
+.kpi-card h4.energy-medium-low { color: var(--pain-medium); }
+.kpi-card h4.energy-medium { color: var(--pain-low); }
+.kpi-card h4.energy-high { color: var(--pain-zero); }
 
-.kpi-card h4.pain-medium {
-  color: var(--pain-medium);
-}
-
-.kpi-card h4.pain-high {
-  color: var(--pain-high);
-}
-
-.kpi-card h4.kpi-low {
-  color: var(--pain-low);
-}
-
-.kpi-card h4.kpi-medium {
-  color: var(--pain-medium);
-}
-
-.kpi-card h4.kpi-high {
-  color: var(--pain-high);
-}
-
-.kpi-card h4.kpi-zero {
-  color: var(--pain-zero);
-}
-
-.kpi-card h4.kpi-neutral {
-  color: var(--btn-primary);
-}
-
-.total-entries {
-  color: var(--btn-primary)
+.kpi-card h4.kpi-neutral { color: var(--text-secondary);}
+.kpi-card h4.kpi-zero { color: var(--pain-zero);}
+.kpi-card h4.kpi-low { color: var(--pain-low);}
+.kpi-card h4.kpi-medium { color: var(--pain-medium);}
+.kpi-card h4.kpi-high { color: var(--pain-high);
 }
 
 .kpis-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
-  margin-top: 16px;
 }
 
 .kpi-card {

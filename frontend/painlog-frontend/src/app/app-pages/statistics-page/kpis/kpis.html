@@ -16,23 +16,23 @@
     </div>
   } @else {
     <div class="kpi-card">
-      <h3>Average pain (0-10)</h3>
-      <h4 [ngClass]="getIntensityClass(stats.avgIntensity)">
-        {{ stats.avgIntensity }}
+      <h3>Average Energy Level</h3>
+      <h4 [ngClass]="getEnergyClass(stats.avgEnergy)">
+        {{ stats.avgEnergy }}
       </h4>
     </div>
 
     <div class="kpi-card">
-      <h3>Average pain this month (0-10)</h3>
-      <h4 [ngClass]="getMonthIntensityClass(stats.avgIntPerMonth)">
-        {{ stats.avgIntPerMonth }}
+      <h3>Average sleep hours</h3>
+      <h4 [ngClass]="getSleepClass(stats.avgSleep)">
+        {{ stats.avgSleep }}
       </h4>
     </div>
 
     <div class="kpi-card">
-      <h3>Total of Pain Entries</h3>
-      <h4 class="total-entries">
-        {{ stats.entriesPerMonth }}
+      <h3>% of times you took medication</h3>
+      <h4 [ngClass]="getMedicationClass(stats.medicationPercentage)">
+        {{ stats.medicationPercentage }}%
       </h4>
     </div>
   }

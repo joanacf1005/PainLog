@@ -81,13 +81,14 @@
           <div class="daily-entry-content">
             <div class="daily-entry-badge">Today's Entry • {{ todayLabel }}</div>
 
-            <p>Pain location: {{ dailyEntry.painLocation }}.</p>
-            <p>Pain type: {{ dailyEntry.painType }}.</p>
+            <p>Pain location: {{ dailyEntry.painLocation || '—' }}.</p>
+            <p>Pain type: {{ dailyEntry.painType || '—' }}.</p>
             <p>{{ dailyEntry.medicationText }}</p>
 
+            
             <div class="daily-entry-meta">
-              <span class="intensity-pill" [ngClass]="getIntensityClass(dailyEntry.painIntensity ?? 0)">
-                Intensity: {{ dailyEntry.painIntensity ?? 0 }}/10
+              <span class="intensity-pill" [ngClass]="getIntensityClass(dailyEntry.painIntensity)">
+                Intensity: {{ dailyEntry.painIntensity }}/10
               </span>
 
               <span class="energy-pill" [ngClass]="getEnergyClass(dailyEntry.energyLevel ?? 0)">
@@ -115,14 +116,6 @@
     </section>
 
     <app-kpi-cards></app-kpi-cards>
-
-    <!-- <section class="help-section">
-      <h3>Helpful articles</h3>
-
-      <div class="help-cards">
-        <article class="help-card"></article>
-      </div>
-    </section> -->
   }
 
   @if (showDeleteModal) {
