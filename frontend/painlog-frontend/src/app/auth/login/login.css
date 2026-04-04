@@ -49,6 +49,21 @@ form {
   color: var(--text-main);
 }
 
+.error-top {
+  margin-bottom: 16px;
+}
+
+.form-group input.input-error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 4px rgba(201, 122, 122, 0.12);
+  background: var(--background-card);
+}
+
+.form-group input.input-error:focus {
+  border-color: var(--error);
+  box-shadow: 0 0 0 4px rgba(201, 122, 122, 0.16);
+}
+
 .form-group input {
   height: 48px;
   border: 1px solid var(--background-soft);

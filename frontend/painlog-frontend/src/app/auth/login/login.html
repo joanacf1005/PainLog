@@ -3,6 +3,10 @@
     <h1>Login</h1>
     <p class="subtitle">Access your PainLog account</p>
 
+    @if (errorMessage) {
+      <p class="error error-top">{{ errorMessage }}</p>
+    }
+
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="form-group">
         <label for="email">Email</label>
@@ -11,11 +15,8 @@
           type="email"
           formControlName="email"
           placeholder="Enter your email"
+          [class.input-error]="emailCtrl?.touched && emailCtrl?.invalid"
         >
-
-        @if (form.get('email')?.touched && form.get('email')?.invalid) {
-          <small>Email is invalid.</small>
-        }
       </div>
 
       <div class="form-group">
@@ -25,16 +26,9 @@
           type="password"
           formControlName="password"
           placeholder="Enter your password"
+          [class.input-error]="passwordCtrl?.touched && passwordCtrl?.invalid"
         >
-
-        @if (form.get('password')?.touched && form.get('password')?.invalid) {
-          <small>Password is invalid.</small>
-        }
       </div>
-
-      @if (errorMessage) {
-        <p class="error">{{ errorMessage }}</p>
-      }
 
       <button type="submit" class="btn-primary" [disabled]="loading || form.invalid">
         @if (loading) {
@@ -51,4 +45,3 @@
     </p>
   </div>
 </div>
-
