@@ -71,7 +71,7 @@ export class ResourcesPage {
     },
     {
       category: 'Article',
-      title: 'Mindfulness traits and chronic pain distress',
+      title: 'Mindfulness traits',
       description: 'Evidence that mindfulness traits may reduce distress and improve wellbeing.',
       link: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC10712298/',
       image: 'assets/resources/article3.jpg',
@@ -91,7 +91,7 @@ export class ResourcesPage {
     {
       category: 'Help',
       title: 'Self-Management of Chronic Pain',
-      description: 'Integrative guide that highlights relaxation, meditation, biofeedback, etc.',
+      description: 'Integrative guide that highlights relaxation, meditation, biofeedback, and chronic pain relief.',
       link: 'https://www.fammed.wisc.edu/files/webfm-uploads/documents/outreach/im/overview-self-management-of-chronic-pain.pdf',
       image: 'assets/resources/help4.jpg',
       buttonText: 'Open resource',
