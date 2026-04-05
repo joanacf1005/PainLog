@@ -1,0 +1,145 @@
+.kpis-section {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.kpi-card {
+  background: var(--background-card);
+  border: 1px solid rgba(127, 144, 164, 0.18);
+  border-radius: 18px;
+  padding: 16px 18px;
+  min-height: 96px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  border-color: rgba(111, 159, 195, 0.28);
+}
+
+.kpi-card h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.kpi-card h4 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.kpi-card h4.pain-zero {
+  color: var(--pain-zero);
+}
+
+.kpi-card h4.pain-low {
+  color: var(--pain-low);
+}
+
+.kpi-card h4.pain-medium {
+  color: var(--pain-medium);
+}
+
+.kpi-card h4.pain-high {
+  color: var(--pain-high);
+}
+
+.kpi-card h4.kpi-low {
+  color: var(--pain-low);
+}
+
+.kpi-card h4.kpi-medium {
+  color: var(--pain-medium);
+}
+
+.kpi-card h4.kpi-high {
+  color: var(--pain-high);
+}
+
+.kpi-card h4.kpi-zero {
+  color: var(--pain-zero);
+}
+
+.kpi-card h4.kpi-neutral {
+  color: var(--btn-primary);
+}
+
+.total-entries {
+  color: var(--btn-primary)
+}
+
+.kpis-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.kpi-card {
+  min-height: 120px;
+  border-radius: 16px;
+  padding: 18px;
+  background: var(--background-card);
+  border: 1px solid rgba(127, 144, 164, 0.12);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.skeleton-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-kpi-title,
+.skeleton-kpi-value {
+  border-radius: 12px;
+  background: linear-gradient(90deg, #e6eaf0 25%, #f3f5f8 37%, #e6eaf0 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton-kpi-title {
+  width: 70%;
+  height: 16px;
+}
+
+.skeleton-kpi-value {
+  width: 45%;
+  height: 34px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+@media (max-width: 960px) {
+  .kpis-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .kpi-card {
+    padding: 15px 16px;
+    min-height: 88px;
+  }
+}

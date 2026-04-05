@@ -1,0 +1,44 @@
+<header class="app-header">
+  <div class="app-name">
+    <h1>PainLog</h1>
+  </div>
+
+  <div class="header-actions">
+    <button class="theme-toggle" (click)="toggleTheme()" aria-label="Toggle theme">
+      @if (isDarkMode) {
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3.75a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75zm0 13.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75zm8.25-6.75a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75zM6.75 10.5a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75zM18.364 5.636a.75.75 0 0 1 0 1.061l-1.06 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0zM7.757 16.243a.75.75 0 0 1 0 1.06l-1.06 1.061a.75.75 0 0 1-1.06-1.06l1.06-1.061a.75.75 0 0 1 1.06 0zm10.607 0a.75.75 0 0 1 1.06 0l1.061 1.061a.75.75 0 0 1-1.06 1.06l-1.061-1.06a.75.75 0 0 1 0-1.06zM6.697 5.636a.75.75 0 0 1 1.06 0l1.061 1.06a.75.75 0 1 1-1.06 1.06l-1.06-1.06a.75.75 0 0 1 0-1.06zM12 8.25A3.75 3.75 0 1 1 8.25 12 3.75 3.75 0 0 1 12 8.25z"/>
+        </svg>
+      } @else {
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 1 0 11.5 11.5z"/>
+        </svg>
+      }
+    </button>
+
+    <button class="logout-btn" (click)="openLogoutModal()" aria-label="Logout">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 17v-2h4v-2h-4v-2l-4 3 4 3zm8-13H8a2 2 0 0 0-2 2v3h2V6h10v12H8v-3H6v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
+      </svg>
+      <span>Logout</span>
+    </button>
+  </div>
+</header>
+
+@if (showLogoutModal) {
+  <div class="modal-backdrop" (click)="closeLogoutModal()">
+    <div class="logout-modal" (click)="$event.stopPropagation()">
+      <h3>Confirm Logout</h3>
+      <p>Are you sure you want to logout?</p>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-cancel-btn" (click)="closeLogoutModal()">
+          Cancel
+        </button>
+        <button type="button" class="modal-confirm-btn" (click)="confirmLogout()">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+}

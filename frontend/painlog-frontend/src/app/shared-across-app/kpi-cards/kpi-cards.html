@@ -1,0 +1,39 @@
+<section class="kpis-section">
+  @if (loading) {
+    <div class="kpi-card skeleton-kpi">
+      <div class="skeleton-kpi-title"></div>
+      <div class="skeleton-kpi-value"></div>
+    </div>
+
+    <div class="kpi-card skeleton-kpi">
+      <div class="skeleton-kpi-title"></div>
+      <div class="skeleton-kpi-value"></div>
+    </div>
+
+    <div class="kpi-card skeleton-kpi">
+      <div class="skeleton-kpi-title"></div>
+      <div class="skeleton-kpi-value"></div>
+    </div>
+  } @else {
+    <div class="kpi-card">
+      <h3>Average pain (0-10)</h3>
+      <h4 [ngClass]="getIntensityClass(stats.avgIntensity)">
+        {{ stats.avgIntensity }}
+      </h4>
+    </div>
+
+    <div class="kpi-card">
+      <h3>Average pain this month (0-10)</h3>
+      <h4 [ngClass]="getMonthIntensityClass(stats.avgIntPerMonth)">
+        {{ stats.avgIntPerMonth }}
+      </h4>
+    </div>
+
+    <div class="kpi-card">
+      <h3>Total of Pain Entries</h3>
+      <h4 class="total-entries">
+        {{ stats.entriesPerMonth }}
+      </h4>
+    </div>
+  }
+</section>

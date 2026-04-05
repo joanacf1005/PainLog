@@ -1,0 +1,17 @@
+<article class="resource-card">
+  @if (image) {
+    <div class="resource-image">
+      <img [src]="image" [alt]="title" />
+    </div>
+  }
+
+  <div class="resource-content">
+    <span class="resource-category">{{ category }}</span>
+    <h3>{{ title }}</h3>
+    <p>{{ description }}</p>
+
+    <a class="resource-btn" [href]="link" target="_blank" rel="noopener noreferrer">
+        {{ buttonText }}
+     </a>
+  </div>
+</article>

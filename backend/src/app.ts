@@ -17,8 +17,23 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 const app = express()
-app.use(cors())
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:4200',
+  credentials: true
+}));
 app.use(express.json())
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'PainLog API', 
+    docs: '/health',
+    api: '/api/pain-entries (PROTEGIDO)'
+  });
+});
 
 app.use('/api/pain-entries', verifyToken)
 app.use('/api/medication-entries', verifyToken)
@@ -47,6 +62,10 @@ app.get('/api/pain-entries', async (request, response) => {
     if (error) {
       // Supabase devolveu erro (tabela não existe, sem permissões, etc.)
       return response.status(500).json({ error: error.message }) //Envia mensagem de erro para Postman
+    }
+
+    if (!data) {
+      return response.status(404).json({ error: 'Entry not found' })
     }
 
     // sucesso: devolve array de registos
@@ -101,6 +120,9 @@ app.post('/api/pain-entries', async (request, response) => {
     const req = request as AuthedRequest
     const userId = req.user?.id
 
+    console.log('AUTH USER ID:', userId)
+    console.log('BODY:', request.body)
+
     if (!userId) {
       return response.status(401).json({ error: 'Unauthorized' })
     }
@@ -112,39 +134,49 @@ app.post('/api/pain-entries', async (request, response) => {
       hasTakenMedication, 
       energyLevel, 
       sleepHours, 
-      notes, 
-      date
+      notes
     } = request.body //vai buscar os dados necessários 
 
-    const required = { 
-      painLocation, 
-      painIntensity, 
-      painType, 
-      hasTakenMedication, 
-      energyLevel, 
-      sleepHours, 
-      date 
-    } // Cria um objeto com apenas os campos OBRIGATÓRIOS
+    const trimmedPainLocation = String(painLocation ?? '').trim()
+    const trimmedPainType = String(painType ?? '').trim()
+    const numericPainIntensity = Number(painIntensity)
+    const numericEnergyLevel = Number(energyLevel)
+    const numericSleepHours = Number(sleepHours)
+    const medicationTaken = Boolean(hasTakenMedication)
 
-    if (Object.values(required).some(value => !value && value !== 0 && value !== false)) { // Verifica se algum campo obrigatório está vazio/null/undefined
+    if (
+      !trimmedPainLocation ||
+      !trimmedPainType ||
+      painIntensity === '' ||
+      energyLevel === '' ||
+      sleepHours === '' ||
+      painIntensity === null ||
+      painIntensity === undefined ||
+      energyLevel === null ||
+      energyLevel === undefined ||
+      sleepHours === null ||
+      sleepHours === undefined ||
+      Number.isNaN(numericPainIntensity) ||
+      Number.isNaN(numericEnergyLevel) ||
+      Number.isNaN(numericSleepHours)
+    ) {
       return response.status(400).json({ error: 'Missing mandatory fields!' })
     }
 
     const { data, error } = await supabase // Insere os dados na tabela 'PainEntries' do Supabase 
       .from('PainEntries')
       .insert({ 
-        painLocation: String(painLocation).trim(),
-        painIntensity: Number(painIntensity),
-        painType: String(painType).trim(),
-        hasTakenMedication: Boolean(hasTakenMedication),
-        energyLevel: Number(energyLevel),
-        sleepHours: Number(sleepHours),
+        painLocation: trimmedPainLocation,
+        painIntensity: numericPainIntensity,
+        painType: trimmedPainType,
+        hasTakenMedication: medicationTaken,
+        energyLevel: numericEnergyLevel,
+        sleepHours: numericSleepHours,
         notes: notes?.trim() || null,
-        date: String(date),
         userId
       })
-      .select()//Retorna o registo inserido
-      .single()//Apenas 1 registo
+      .select()
+      .single()
 
     if (error) 
       return response.status(500).json({ error: error.message })
@@ -180,8 +212,7 @@ app.put('/api/pain-entries/:id', async (request, response) => {
       hasTakenMedication, 
       energyLevel, 
       sleepHours, 
-      notes, 
-      date
+      notes
     } = request.body
 
     const required = {  // Cria objeto com campos OBRIGATÓRIOS e valida se todos existem
@@ -190,8 +221,7 @@ app.put('/api/pain-entries/:id', async (request, response) => {
       painType, 
       hasTakenMedication, 
       energyLevel, 
-      sleepHours, 
-      date
+      sleepHours
     }
     
     const missingFields = Object.entries(required) // Verifica campos que estão em falta (ignora 0 e false que são válidos)
@@ -226,8 +256,7 @@ app.put('/api/pain-entries/:id', async (request, response) => {
         hasTakenMedication: Boolean(hasTakenMedication),
         energyLevel: Number(energyLevel),
         sleepHours: Number(sleepHours),
-        notes: notes ? String(notes).trim() : null,
-        date: String(date)
+        notes: notes ? String(notes).trim() : null
       })
       .eq('id', id)
       .eq('userId', userId)
@@ -272,8 +301,7 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
       hasTakenMedication, 
       energyLevel, 
       sleepHours, 
-      notes, 
-      date
+      notes
     } = request.body
 
     // Verifica se o registo existe
@@ -298,7 +326,6 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
     if (energyLevel !== undefined) updateData.energyLevel = Number(energyLevel)
     if (sleepHours !== undefined) updateData.sleepHours = Number(sleepHours)
     if (notes !== undefined) updateData.notes = notes ? String(notes).trim() : null
-    if (date !== undefined) updateData.date = String(date)
 
     // Se nenhum campo para atualizar, retorna 400
     if (Object.keys(updateData).length === 0) {
@@ -598,19 +625,17 @@ app.get('/api/medication-entries', async (request, response) => {
   try {
     const { data, error } = await supabase 
       .from('MedicationEntries')  
-      .select(`
-        *,
-        PainEntries(painLocation, date), 
-        Medication(name, dosage)
-      `)
+      .select(`*`)
 
     if (error) {
       return response.status(500).json({ error: error.message }) 
     }
 
     return response.json(data) 
+    
   } catch {
     return response.status(500).json({ error: 'Server Error' })
+    
   }
 })
 
@@ -645,6 +670,7 @@ app.post('/api/medication-entries', async (request, response) => {
 
 app.delete('/api/medication-entries/:id', async (request, response) => {
   try {
+    
     const { id } = request.params as { id: string }
 
     const { data: existing } = await supabase
@@ -669,7 +695,5 @@ app.delete('/api/medication-entries/:id', async (request, response) => {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
-
-
 
 app.listen(port, () => console.log(`Server running on port ${port}`))
