@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PainEntries } from './pain-entries';
+import { PainEntriesService } from './pain-entries';
 
 describe('PainEntries', () => {
-  let service: PainEntries;
+  let service: PainEntriesService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(PainEntries);
+    service = TestBed.inject(PainEntriesService);
   });
 
   it('should be created', () => {

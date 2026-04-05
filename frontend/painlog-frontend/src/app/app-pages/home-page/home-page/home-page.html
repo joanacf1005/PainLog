@@ -13,7 +13,6 @@
     <section class="daily-entry-hero skeleton-card">
       <div class="daily-entry-content">
         <div class="skeleton-badge"></div>
-
         <div class="skeleton-line wide"></div>
         <div class="skeleton-line wide"></div>
         <div class="skeleton-line medium"></div>
@@ -85,7 +84,6 @@
             <p>Pain type: {{ dailyEntry.painType || '—' }}.</p>
             <p>{{ dailyEntry.medicationText }}</p>
 
-            
             <div class="daily-entry-meta">
               <span class="intensity-pill" [ngClass]="getIntensityClass(dailyEntry.painIntensity)">
                 Intensity: {{ dailyEntry.painIntensity }}/10
@@ -116,6 +114,29 @@
     </section>
 
     <app-kpi-cards></app-kpi-cards>
+
+    <section class="help-section">
+      <div class="section-title-row">
+        <h3>Useful resources</h3>
+      </div>
+
+      <div class="help-cards">
+        @for (card of homeCards; track card.title) {
+          <article class="help-card">
+            <img [src]="card.image" [alt]="card.title" class="help-card-image" />
+
+            <div class="help-card-body">
+              <span class="help-card-category">{{ card.category }}</span>
+              <h4>{{ card.title }}</h4>
+              <p>{{ card.description }}</p>
+              <a class="help-card-btn" [href]="card.link" target="_blank" rel="noopener noreferrer">
+                {{ card.buttonText }}
+              </a>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
   }
 
   @if (showDeleteModal) {
