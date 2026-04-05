@@ -15,6 +15,15 @@ type DailyEntryView = Omit<PainEntry, 'energyLevel' | 'sleepHours'> & {
   medicationText?: string;
 };
 
+type HomeResourceCard = {
+  category: 'Pain' | 'Help' | 'Recipe' | 'Video' | 'Article';
+  title: string;
+  description: string;
+  link: string;
+  image: string;
+  buttonText: string;
+};
+
 @Component({
   selector: 'app-home-page',
   standalone: true,
@@ -43,6 +52,33 @@ export class HomePage implements OnInit {
     year: 'numeric',
   });
 
+  homeCards: HomeResourceCard[] = [
+    {
+      category: 'Recipe',
+      title: 'Anti-inflammatory shot',
+      description: 'A quick ginger, lemon and turmeric shot with anti-inflammatory properties.',
+      link: 'https://www.bbcgoodfood.com/recipes/ginger-shots',
+      image: 'assets/resources/shot.jpg',
+      buttonText: 'View recipe',
+    },
+    {
+      category: 'Article',
+      title: 'Mindfulness to cope with chronic pain',
+      description: 'Practical guidance on using mindfulness to manage chronic pain.',
+      link: 'https://www.mayoclinichealthsystem.org/hometown-health/speaking-of-health/use-mindfulness-to-cope-with-chronic-pain',
+      image: 'assets/resources/article1.jpg',
+      buttonText: 'Read article',
+    },
+    {
+      category: 'Video',
+      title: '5-minute breathing reset',
+      description: 'A short breathing practice to help you slow down and relax.',
+      link: 'https://www.youtube.com/watch?v=L9g4XhFup9g',
+      image: 'assets/resources/breathing.jpg',
+      buttonText: 'Watch video',
+    },
+  ];
+
   private http = inject(HttpClient);
   private supabaseService = inject(SupabaseService);
   private cdr = inject(ChangeDetectorRef);
@@ -53,17 +89,11 @@ export class HomePage implements OnInit {
 
   private async getAuthHeaders(): Promise<HttpHeaders | null> {
     const { data: userData, error: userError } = await this.supabaseService.getUser();
-
-    if (userError || !userData.user) {
-      return null;
-    }
+    if (userError || !userData.user) return null;
 
     const sessionResult = await this.supabaseService.getSession();
     const accessToken = sessionResult.data.session?.access_token;
-
-    if (!accessToken) {
-      return null;
-    }
+    if (!accessToken) return null;
 
     return new HttpHeaders({
       Authorization: `Bearer ${accessToken}`,
@@ -97,8 +127,7 @@ export class HomePage implements OnInit {
       const user = data.user;
       const metadata = user.user_metadata as any;
 
-      this.userName =
-        `${metadata.firstName || ''} ${metadata.lastName || ''}`.trim() || 'User';
+      this.userName = `${metadata.firstName || ''} ${metadata.lastName || ''}`.trim() || 'User';
       this.firstName = this.userName.split(' ')[0] || 'User';
 
       const headers = await this.getAuthHeaders();

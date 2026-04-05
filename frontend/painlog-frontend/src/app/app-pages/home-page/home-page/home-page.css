@@ -134,7 +134,6 @@
   color: var(--error);
 }
 
-
 .sleep-low {
   background: rgba(201, 122, 122, 0.18);
   color: var(--pain-high);
@@ -221,8 +220,16 @@
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
 .help-section h3 {
-  margin: 0 0 18px;
+  margin: 0;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-secondary);
@@ -232,19 +239,91 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
+  align-items: stretch;
 }
 
 .help-card {
-  min-height: 160px;
-  border-radius: 16px;
+  min-height: 320px;
+  border-radius: 18px;
   border: 1px solid rgba(127, 144, 164, 0.12);
   background: var(--background-soft);
-  padding: 18px;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
 }
 
 .help-card:hover {
-  background: color-mix(in srgb, var(--background-soft) 85%, white);
+  transform: translateY(-2px);
+  background: color-mix(in srgb, var(--background-soft) 88%, white);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+.help-card-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid rgba(127, 144, 164, 0.12);
+  background: var(--background-main);
+  flex-shrink: 0;
+}
+
+.help-card-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.help-card-category {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--btn-secondary);
+  color: var(--background-card);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+
+.help-card-body h4 {
+  margin: 0 0 10px;
+  font-size: 1.08rem;
+  color: var(--text-main);
+}
+
+.help-card-body p {
+  margin: 0 0 16px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  font-size: 0.96rem;
+  flex: 1;
+}
+
+.help-card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: var(--btn-primary);
+  color: var(--background-card);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 18px rgba(66, 118, 158, 0.16);
+}
+
+.help-card-btn:hover {
+  background: var(--btn-primary-hover);
+  transform: translateY(-1px);
 }
 
 .modal-backdrop {
@@ -427,17 +506,11 @@
 }
 
 .skeleton-help {
-  min-height: 160px;
-  padding: 18px;
+  min-height: 320px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.skeleton-help-title {
-  width: 65%;
-  height: 18px;
-  margin-bottom: 6px;
+  gap: 0;
 }
 
 @keyframes shimmer {
