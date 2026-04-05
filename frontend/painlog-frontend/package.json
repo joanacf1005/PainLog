@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "postbuild": "node scripts/rename-index.cjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:painlog-frontend": "node dist/painlog-frontend/server/server.mjs"
