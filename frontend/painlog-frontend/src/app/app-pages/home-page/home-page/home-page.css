@@ -521,3 +521,20 @@
     background-position: 0 0;
   }
 }
+
+@media (max-width: 768px) {
+  .daily-entry-hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .daily-entry-actions {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .daily-entry-actions button,
+  .daily-entry-actions a {
+    width: 100%;
+  }
+}
