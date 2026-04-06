@@ -1,0 +1,1 @@
+export { reqHandler as default } from '../dist/painlog-frontend/server/server.mjs';

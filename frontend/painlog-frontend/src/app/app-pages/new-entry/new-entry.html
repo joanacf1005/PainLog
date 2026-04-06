@@ -1,0 +1,138 @@
+<main class="new-entry-page">
+  <section class="form-card">
+    <header class="form-header">
+      <h1>{{ isEditMode ? 'Edit Pain Entry' : 'New Pain Entry' }}</h1>
+    <p>{{ isEditMode ? 'Update your record.' : 'Record how you’re feeling today.' }}</p>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="new-entry-form">
+      <div class="form-grid">
+        <div class="field">
+          <label for="painIntensity">Pain intensity (0-10)</label>
+          <input
+            id="painIntensity"
+            type="number"
+            min="0"
+            max="10"
+            step="1"
+            formControlName="painIntensity"
+            placeholder="e.g. 5"
+          />
+          @if (form.get('painIntensity')?.touched && form.get('painIntensity')?.invalid) {
+            <small class="error">Pain intensity is required.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="painLocation">Pain location</label>
+          <input
+            id="painLocation"
+            type="text"
+            formControlName="painLocation"
+            placeholder="e.g. lower back"
+          />
+          @if (form.get('painLocation')?.touched && form.get('painLocation')?.invalid) {
+            <small class="error">Pain location is required.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="painType">Pain type</label>
+          <select id="painType" formControlName="painType">
+            <option value="" disabled>Select type</option>
+            <option value ="No-pain">No pain</option>
+            <option value="sharp">Sharp</option>
+            <option value="aching">Aching</option>
+            <option value="burning">Burning</option>
+            <option value="throbbing">Throbbing</option>
+            <option value="pressure">Pressure</option>
+          </select>
+          @if (form.get('painType')?.touched && form.get('painType')?.invalid) {
+            <small class="error">Pain type is required.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="energyLevel">Energy level (0-5)</label>
+          <input
+            id="energyLevel"
+            type="number"
+            min="0"
+            max="5"
+            step="1"
+            formControlName="energyLevel"
+            placeholder="e.g. 3"
+          />
+          @if (form.get('energyLevel')?.touched && form.get('energyLevel')?.invalid) {
+            <small class="error">Energy level is required.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="sleepHours">Sleep hours (0-24)</label>
+          <input
+            id="sleepHours"
+            type="number"
+            min="0"
+            max="24"
+            step="1"
+            formControlName="sleepHours"
+            placeholder="e.g. 8"
+          />
+          @if (form.get('sleepHours')?.touched && form.get('sleepHours')?.invalid) {
+            <small class="error">Sleep hours are required.</small>
+          }
+        </div>
+      </div>
+
+      <section class="checkbox-row">
+        <label class="checkbox-option">
+          <input type="checkbox" formControlName="hasTakenMedication" />
+          <span>Check box if you took medication</span>
+        </label>
+      </section>
+
+      @if (form.get('hasTakenMedication')?.value) {
+        <section class="medication-section">
+          <h2>Medication</h2>
+          <p>Write the medication name and dose manually.</p>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="name">Medication name</label>
+              <input id="name" type="text" formControlName="name" placeholder="e.g. Ibuprofen" />
+              @if (form.get('name')?.touched && form.get('name')?.invalid) {
+                <small class="error">Medication name is required.</small>
+              }
+            </div>
+
+            <div class="field">
+              <label for="dosage">Dosage (mg)</label>
+              <input id="dosage" type="text" formControlName="dosage" placeholder="e.g. 400 mg" />
+              @if (form.get('dosage')?.touched && form.get('dosage')?.invalid) {
+                <small class="error">Dosage is required.</small>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <div class="field">
+        <label for="notes">Notes</label>
+        <textarea
+          id="notes"
+          rows="5"
+          formControlName="notes"
+          placeholder="Add any extra details..."
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="secondary-btn" routerLink="/homepage">Cancel</button>
+        <button type="submit" class="primary-btn" [disabled]="loading || form.invalid">
+          {{ loading ? 'Saving...' : (isEditMode ? 'Update entry' : 'Save entry') }}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>

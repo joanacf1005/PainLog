@@ -1,0 +1,88 @@
+<main class="resources-page">
+  <section class="resources-hero">
+    <div class="hero-content">
+      <h1>{{ heroTitle }}</h1>
+      <p>{{ heroDescription }}</p>
+    </div>
+  </section>
+
+  <section class="resources-section">
+    <div class="section-header">
+      <h2>Recipes</h2>
+      <p>Simple meals for low-energy days.</p>
+    </div>
+
+    <div class="resources-grid">
+      @for (item of recipeItems; track item.title) {
+        <app-resources-card
+          [category]="item.category"
+          [title]="item.title"
+          [description]="item.description"
+          [link]="item.link"
+          [image]="item.image"
+          [buttonText]="item.buttonText"
+        ></app-resources-card>
+      }
+    </div>
+  </section>
+
+  <section class="resources-section">
+    <div class="section-header">
+      <h2>Videos</h2>
+      <p>Short calming content to breath and relax.</p>
+    </div>
+
+    <div class="resources-grid">
+      @for (item of videoItems; track item.title) {
+        <app-resources-card
+          [category]="item.category"
+          [title]="item.title"
+          [description]="item.description"
+          [link]="item.link"
+          [image]="item.image"
+          [buttonText]="item.buttonText"
+        ></app-resources-card>
+      }
+    </div>
+  </section>
+
+  <section class="resources-section">
+    <div class="section-header">
+      <h2>Articles</h2>
+      <p>Useful reading about pain, mindfulness and self-management.</p>
+    </div>
+
+    <div class="resources-grid">
+      @for (item of articleItems; track item.title) {
+        <app-resources-card
+          [category]="item.category"
+          [title]="item.title"
+          [description]="item.description"
+          [link]="item.link"
+          [image]="item.image"
+          [buttonText]="item.buttonText"
+        ></app-resources-card>
+      }
+    </div>
+  </section>
+
+  <section class="resources-section">
+    <div class="section-header">
+      <h2>Help</h2>
+      <p>Support tools and useful documents.</p>
+    </div>
+
+    <div class="resources-grid">
+      @for (item of helpItems; track item.title) {
+        <app-resources-card
+          [category]="item.category"
+          [title]="item.title"
+          [description]="item.description"
+          [link]="item.link"
+          [image]="item.image"
+          [buttonText]="item.buttonText"
+        ></app-resources-card>
+      }
+    </div>
+  </section>
+</main>

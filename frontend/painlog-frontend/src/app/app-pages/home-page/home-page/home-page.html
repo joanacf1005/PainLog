@@ -1,0 +1,155 @@
+<main class="home-page">
+  @if (loading) {
+    <section class="welcome-section skeleton-card">
+      <div class="skeleton-header">
+        <div>
+          <div class="skeleton-title"></div>
+          <div class="skeleton-subtitle"></div>
+        </div>
+        <div class="skeleton-btn"></div>
+      </div>
+    </section>
+
+    <section class="daily-entry-hero skeleton-card">
+      <div class="daily-entry-content">
+        <div class="skeleton-badge"></div>
+        <div class="skeleton-line wide"></div>
+        <div class="skeleton-line wide"></div>
+        <div class="skeleton-line medium"></div>
+
+        <div class="daily-entry-meta">
+          <div class="skeleton-chip"></div>
+          <div class="skeleton-chip"></div>
+          <div class="skeleton-chip"></div>
+        </div>
+
+        <div class="skeleton-notes"></div>
+      </div>
+
+      <div class="daily-entry-actions">
+        <div class="skeleton-action"></div>
+        <div class="skeleton-action"></div>
+        <div class="skeleton-action delete-like"></div>
+      </div>
+    </section>
+
+    <section class="kpis-section">
+      <div class="kpi-card skeleton-kpi">
+        <div class="skeleton-kpi-title"></div>
+        <div class="skeleton-kpi-value"></div>
+      </div>
+
+      <div class="kpi-card skeleton-kpi">
+        <div class="skeleton-kpi-title"></div>
+        <div class="skeleton-kpi-value"></div>
+      </div>
+
+      <div class="kpi-card skeleton-kpi">
+        <div class="skeleton-kpi-title"></div>
+        <div class="skeleton-kpi-value"></div>
+      </div>
+    </section>
+
+    <section class="help-section skeleton-card">
+      <div class="skeleton-section-title"></div>
+
+      <div class="help-cards">
+        <article class="help-card skeleton-help">
+          <div class="skeleton-help-title"></div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line short"></div>
+        </article>
+
+        <article class="help-card skeleton-help">
+          <div class="skeleton-help-title"></div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line short"></div>
+        </article>
+
+        <article class="help-card skeleton-help">
+          <div class="skeleton-help-title"></div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line short"></div>
+        </article>
+      </div>
+    </section>
+  } @else {
+    <section class="welcome-section">
+      @if (dailyEntry) {
+        <div class="daily-entry-hero">
+          <div class="daily-entry-content">
+            <div class="daily-entry-badge">Today's Entry • {{ todayLabel }}</div>
+
+            <p>Pain location: {{ dailyEntry.painLocation || '—' }}.</p>
+            <p>Pain type: {{ dailyEntry.painType || '—' }}.</p>
+            <p>{{ dailyEntry.medicationText }}</p>
+
+            <div class="daily-entry-meta">
+              <span class="intensity-pill" [ngClass]="getIntensityClass(dailyEntry.painIntensity)">
+                Intensity: {{ dailyEntry.painIntensity }}/10
+              </span>
+
+              <span class="energy-pill" [ngClass]="getEnergyClass(dailyEntry.energyLevel ?? 0)">
+                Energy Level: {{ dailyEntry.energyLevel ?? 0 }}/5
+              </span>
+
+              <span class="sleep-pill" [ngClass]="getSleepClass(dailyEntry.sleepHours ?? 0)">
+                Sleep: {{ dailyEntry.sleepHours ?? 0 }}h
+              </span>
+            </div>
+          </div>
+
+          <div class="daily-entry-actions">
+            <button type="button" class="detail-entry-btn" [routerLink]="['/details-page', dailyEntry.id]">Details</button>
+            <button type="button" class="edit-entry-btn" [routerLink]="['/edit-entry', dailyEntry.id]">Edit</button>
+            <button type="button" class="delete-entry-btn" (click)="openDeleteModal(dailyEntry.id)">Delete</button>
+          </div>
+        </div>
+      } @else {
+        <div class="welcome-header">
+          <h2>How are you feeling today?</h2>
+          <button class="add-entry-btn" routerLink="/newentry">Add Entry</button>
+        </div>
+      }
+    </section>
+
+    <app-kpi-cards></app-kpi-cards>
+
+    <section class="help-section">
+      <div class="section-title-row">
+        <h3>Useful resources</h3>
+      </div>
+
+      <div class="help-cards">
+        @for (card of homeCards; track card.title) {
+          <article class="help-card">
+            <img [src]="card.image" [alt]="card.title" class="help-card-image" />
+
+            <div class="help-card-body">
+              <span class="help-card-category">{{ card.category }}</span>
+              <h4>{{ card.title }}</h4>
+              <p>{{ card.description }}</p>
+              <a class="help-card-btn" [href]="card.link" target="_blank" rel="noopener noreferrer">
+                {{ card.buttonText }}
+              </a>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  @if (showDeleteModal) {
+    <div class="modal-backdrop" (click)="closeDeleteModal()">
+      <div class="delete-modal" (click)="$event.stopPropagation()">
+        <h3>Delete entry?</h3>
+        <p>This action cannot be undone.</p>
+
+        <div class="modal-actions">
+          <button type="button" class="modal-cancel-btn" (click)="closeDeleteModal()">Cancel</button>
+          <button type="button" class="modal-delete-btn" (click)="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+  }
+</main>

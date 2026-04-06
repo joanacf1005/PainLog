@@ -1,0 +1,254 @@
+<main class="statistics-page">
+  <section class="stats-header">
+    <div>
+      <h1>Pain Statistics</h1>
+      <p>Understand your pain and identify recurring patterns.</p>
+    </div>
+  </section>
+
+  @if (loading) {
+    <section class="top-section">
+      <article class="stats-card chart-card skeleton-card">
+        <div class="card-header">
+          <div>
+            <div class="skeleton-title"></div>
+            <div class="skeleton-subtitle"></div>
+          </div>
+        </div>
+
+        <div class="donut-and-legend skeleton-donut-layout">
+          <div class="donut-wrap skeleton-donut-wrap">
+            <div class="skeleton-donut"></div>
+          </div>
+
+          <aside class="legend-box">
+            <ul class="legend-list">
+              @for (item of [1, 2, 3, 4, 5]; track item) {
+                <li class="legend-item skeleton-legend-item">
+                  <span class="legend-left">
+                    <span class="legend-dot skeleton-dot"></span>
+                    <span class="legend-label skeleton-line short"></span>
+                  </span>
+
+                  <span class="legend-right">
+                    <span class="skeleton-line tiny"></span>
+                  </span>
+                </li>
+              }
+            </ul>
+          </aside>
+        </div>
+      </article>
+    </section>
+
+    <section class="kpi-section">
+      <app-kpi-cards></app-kpi-cards>
+    </section>
+
+    <section class="stats-section">
+      <article class="stats-card chart-card skeleton-card">
+        <div class="card-header">
+          <div>
+            <div class="skeleton-title"></div>
+            <div class="skeleton-subtitle"></div>
+          </div>
+        </div>
+
+        <div class="bar-chart-wrap skeleton-bar-wrap">
+          <div class="bar-chart">
+            <div class="bar-chart-y">
+              <span class="skeleton-y-label"></span>
+              <span class="skeleton-y-label"></span>
+              <span class="skeleton-y-label"></span>
+              <span class="skeleton-y-label"></span>
+              <span class="skeleton-y-label"></span>
+              <span class="skeleton-y-label"></span>
+            </div>
+
+            <div class="bar-chart-area">
+              <div class="bar-grid">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+
+              <div class="bars-row">
+                @for (item of [1, 2, 3, 4, 5]; track item) {
+                  <div class="bar-item">
+                    <div class="bar-track skeleton-bar-track">
+                      <div class="bar-fill skeleton-bar-fill"></div>
+                    </div>
+                    <div class="bar-value skeleton-line tiny"></div>
+                    <div class="bar-label skeleton-line short"></div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  } @else if (errorMessage) {
+    <section class="stats-card">
+      <p class="error-message">{{ errorMessage }}</p>
+    </section>
+  } @else {
+    <section class="top-section">
+      <article class="stats-card chart-card">
+        <div class="card-header">
+          <h2>Pain Location</h2>
+          <span class="card-subtitle">Every entry by pain location</span>
+        </div>
+
+        @if (totalEntries > 0) {
+          <div class="donut-and-legend">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 120 120" class="donut-svg" aria-label="Pain location chart">
+                <g transform="translate(60,60)">
+                  @for (item of locationStats; track item.label) {
+                    <circle
+                      class="donut-segment"
+                      r="45"
+                      cx="0"
+                      cy="0"
+                      fill="transparent"
+                      [attr.stroke]="item.color"
+                      stroke-width="16"
+                      stroke-linecap="round"
+                      [attr.stroke-dasharray]="item.dashArray"
+                      [attr.stroke-dashoffset]="item.dashOffset"
+                      transform="rotate(-90)"
+                      (mouseenter)="showTooltip(item, $event)"
+                      (mousemove)="moveTooltip($event)"
+                      (mouseleave)="hideTooltip()"
+                    ></circle>
+                  }
+                </g>
+
+                <circle cx="60" cy="60" r="28" class="donut-center"></circle>
+
+                <text x="60" y="58" text-anchor="middle" class="donut-number">
+                  All
+                </text>
+                <text x="60" y="72" text-anchor="middle" class="donut-text">
+                  entries
+                </text>
+              </svg>
+
+              @if (hoveredItem) {
+                <div
+                  class="chart-tooltip"
+                  [style.left.px]="tooltipPos.x"
+                  [style.top.px]="tooltipPos.y"
+                  [style.borderLeftColor]="hoveredItem.color"
+                >
+                  <div class="tooltip-title">{{ hoveredItem.label }}</div>
+                  <div class="tooltip-meta">
+                    {{ hoveredItem.value }} entries • {{ hoveredItem.percent | number:'1.0-0' }}%
+                  </div>
+                </div>
+              }
+            </div>
+
+            <aside class="legend-box">
+              <ul class="legend-list">
+                @for (item of locationStats; track item.label) {
+                  <li class="legend-item">
+                    <span class="legend-left">
+                      <span class="legend-dot" [style.background]="item.color"></span>
+                      <span class="legend-label">{{ item.label }}</span>
+                    </span>
+
+                    <span class="legend-right">
+                      <strong>{{ item.value }}</strong>
+                      <span class="muted">({{ item.percent | number:'1.0-0' }}%)</span>
+                    </span>
+                  </li>
+                }
+              </ul>
+            </aside>
+          </div>
+        } @else {
+          <p>No data available.</p>
+        }
+      </article>
+    </section>
+
+    <section class="kpi-section">
+      <app-kpi-cards></app-kpi-cards>
+    </section>
+
+    <section class="stats-section">
+      <article class="stats-card chart-card">
+        <div class="card-header">
+          <h2>Average Pain Intensity by Location</h2>
+          <span class="card-subtitle">Mean score per location</span>
+        </div>
+
+        @if (intensityBars.length) {
+          <div class="bar-chart-wrap">
+            <div class="bar-chart">
+              <div class="bar-chart-y">
+                <span>10</span>
+                <span>8</span>
+                <span>6</span>
+                <span>4</span>
+                <span>2</span>
+                <span>0</span>
+              </div>
+
+              <div class="bar-chart-area">
+                <div class="bar-grid">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+
+                <div class="bars-row">
+                  @for (bar of intensityBars; track bar.label) {
+                    <div class="bar-item">
+                      <div class="bar-track">
+                        <div
+                          class="bar-fill"
+                          [style.height.%]="bar.heightPct"
+                          [style.background]="bar.color"
+                          (mouseenter)="showBarTooltip(bar, $event)"
+                          (mousemove)="moveBarTooltip($event)"
+                          (mouseleave)="hideBarTooltip()"
+                        ></div>
+                      </div>
+                      <div class="bar-value">{{ bar.average | number:'1.0-1' }}</div>
+                      <div class="bar-label">{{ bar.label }}</div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            @if (hoveredBar) {
+              <div
+                class="chart-tooltip bar-tooltip"
+                [style.left.px]="barTooltipPos.x"
+                [style.top.px]="barTooltipPos.y"
+                [style.borderLeftColor]="hoveredBar.color"
+              >
+                <div class="tooltip-title">{{ hoveredBar.label }}</div>
+                <div class="tooltip-meta">
+                  Avg intensity: {{ hoveredBar.average | number:'1.0-1' }} • {{ hoveredBar.count }} entries
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p>No data available.</p>
+        }
+      </article>
+    </section>
+  }
+
+  <app-kpis></app-kpis>
+</main>
