@@ -2,9 +2,9 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [deploy-vercel]
+    branches: [ main, frontend-responsive, deploy-vercel ]
   pull_request:
-    branches: [feature/deploy]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
