@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-undef */
 import express from 'express';
 import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+
 dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SECRET_KEY;
@@ -28,7 +31,7 @@ app.get('/api/pain-entries', async (request, response) => {
         // sucesso: devolve array de registos
         return response.json(data); // Envia array para Postman
     }
-    catch (err) {
+    catch {
         //  Erro JavaScript (não Supabase): variável undefined, etc.
         return response.status(500).json({ error: 'Server Error' });
     }
@@ -47,7 +50,7 @@ app.get('/api/pain-entries/:id', async (request, response) => {
         }
         return response.json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -82,7 +85,7 @@ app.post('/api/pain-entries', async (request, response) => {
             return response.status(500).json({ error: error.message });
         return response.status(201).json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -144,7 +147,7 @@ app.put('/api/pain-entries/:id', async (request, response) => {
         }
         return response.status(200).json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -204,7 +207,7 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
         }
         return response.status(200).json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -233,7 +236,7 @@ app.delete('/api/pain-entries/:id', async (request, response) => {
         }
         return response.status(200).json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -249,7 +252,7 @@ app.get('/api/medication', async (request, response) => {
         }
         return response.json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -266,7 +269,7 @@ app.get('/api/medication/:id', async (request, response) => {
         }
         return response.json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -334,7 +337,7 @@ app.put('/api/medication/:id', async (request, response) => {
         }
         return response.status(200).json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -372,7 +375,7 @@ app.patch('/api/medication/:id', async (request, response) => {
         }
         return response.status(200).json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -398,7 +401,7 @@ app.delete('/api/medication/:id', async (request, response) => {
         }
         return response.status(200).json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -418,7 +421,7 @@ app.get('/api/medication-entries', async (request, response) => {
         }
         return response.json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -441,7 +444,7 @@ app.post('/api/medication-entries', async (request, response) => {
         }
         return response.status(201).json(data);
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
@@ -464,7 +467,7 @@ app.delete('/api/medication-entries/:id', async (request, response) => {
             return response.status(500).json({ error: error.message });
         return response.status(204).send();
     }
-    catch (err) {
+    catch {
         return response.status(500).json({ error: 'Server Error' });
     }
 });
