@@ -230,6 +230,8 @@ export class NewEntry implements OnInit {
         notes: notes || null,
       };
 
+      let createdPainEntryId: string | null = this.entryId;
+
       if (this.isEditMode && this.entryId) {
         await firstValueFrom(
           this.http.put(

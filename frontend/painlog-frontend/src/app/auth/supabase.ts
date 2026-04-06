@@ -56,7 +56,7 @@ export class SupabaseService {
     return this.supabase;
   }
 
-  async getTodaysPainEntry(userId: string) {
+  async getTodaysPainEntryWithMedication(userId: string) {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -65,7 +65,17 @@ export class SupabaseService {
 
     return await this.supabase
       .from('PainEntries')
-      .select('*')
+      .select(`
+        *,
+        MedicationEntries (
+          medicationId,
+          Medication (
+            id,
+            name,
+            dosage
+          )
+        )
+      `)
       .eq('userId', userId)
       .gte('created_at', startOfDay.toISOString())
       .lte('created_at', endOfDay.toISOString())

@@ -11,6 +11,7 @@ import { AuthState } from '../auth-state/auth-state';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
+
 export class Login {
   private fb = inject(FormBuilder);
   private supabase = inject(SupabaseService);
