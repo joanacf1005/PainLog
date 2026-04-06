@@ -84,16 +84,74 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 16px;
 }
 
-.daily-entry-meta span {
-  background: var(--background-main);
-  color: var(--text-main);
-  border: 1px solid rgba(127, 144, 164, 0.18);
+.intensity-pill,
+.energy-pill,
+.sleep-pill {
+  display: inline-flex;
+  align-items: center;
   padding: 8px 12px;
   border-radius: 12px;
   font-size: 0.92rem;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--background-card);
+}
+
+.pain-zero {
+  background: rgba(123, 201, 126, 0.18);
+  color: var(--pain-zero);
+}
+
+.pain-low {
+  background: rgba(190, 173, 118, 0.18);
+  color: var(--pain-low);
+}
+
+.pain-medium {
+  background: rgba(212, 163, 115, 0.18);
+  color: var(--pain-medium);
+}
+
+.pain-high {
+  background: rgba(201, 122, 122, 0.18);
+  color: var(--pain-high);
+}
+
+.energy-high {
+  background: rgba(123, 201, 126, 0.18);
+  color: var(--success);
+}
+
+.energy-medium {
+  background: rgba(212, 163, 115, 0.18);
+  color: var(--warning);
+}
+
+.energy-low {
+  background: rgba(201, 122, 122, 0.18);
+  color: var(--error);
+}
+
+.sleep-low {
+  background: rgba(201, 122, 122, 0.18);
+  color: var(--pain-high);
+}
+
+.sleep-medium-low {
+  background: rgba(212, 163, 115, 0.18);
+  color: var(--pain-medium);
+}
+
+.sleep-medium {
+  background: rgba(190, 173, 118, 0.18);
+  color: var(--pain-low);
+}
+
+.sleep-good {
+  background: rgba(123, 201, 126, 0.18);
+  color: var(--pain-zero);
 }
 
 .daily-entry-notes {
@@ -115,7 +173,7 @@
 }
 
 .edit-entry-btn,
-.delete-entry-btn, 
+.delete-entry-btn,
 .detail-entry-btn {
   width: 100%;
   display: inline-flex;
@@ -130,13 +188,13 @@
   border: none;
 }
 
-.edit-entry-btn, 
+.edit-entry-btn,
 .detail-entry-btn {
   background: var(--btn-secondary);
   color: var(--background-card);
 }
 
-.edit-entry-btn:hover, 
+.edit-entry-btn:hover,
 .detail-entry-btn:hover {
   background: var(--btn-secondary-hover);
   transform: translateY(-1px);
@@ -154,37 +212,6 @@
   transform: translateY(-1px);
 }
 
-.kpis-section {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-  margin-bottom: 1rem;
-}
-
-.kpi-card {
-  background: var(--background-card);
-  border: 1px solid rgba(127, 144, 164, 0.18);
-  border-radius: 18px;
-  padding: 22px;
-  min-height: 120px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.kpi-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
-}
-
-.kpi-card h3 {
-  margin: 0 0 12px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
 .help-section {
   background: var(--background-card);
   border: 1px solid rgba(127, 144, 164, 0.18);
@@ -193,8 +220,16 @@
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
 .help-section h3 {
-  margin: 0 0 18px;
+  margin: 0;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-secondary);
@@ -204,19 +239,91 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
+  align-items: stretch;
 }
 
 .help-card {
-  min-height: 160px;
-  border-radius: 16px;
+  min-height: 320px;
+  border-radius: 18px;
   border: 1px solid rgba(127, 144, 164, 0.12);
   background: var(--background-soft);
-  padding: 18px;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
 }
 
 .help-card:hover {
-  background: color-mix(in srgb, var(--background-soft) 85%, white);
+  transform: translateY(-2px);
+  background: color-mix(in srgb, var(--background-soft) 88%, white);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+.help-card-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid rgba(127, 144, 164, 0.12);
+  background: var(--background-main);
+  flex-shrink: 0;
+}
+
+.help-card-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.help-card-category {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--btn-secondary);
+  color: var(--background-card);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+
+.help-card-body h4 {
+  margin: 0 0 10px;
+  font-size: 1.08rem;
+  color: var(--text-main);
+}
+
+.help-card-body p {
+  margin: 0 0 16px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  font-size: 0.96rem;
+  flex: 1;
+}
+
+.help-card-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: var(--btn-primary);
+  color: var(--background-card);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 18px rgba(66, 118, 158, 0.16);
+}
+
+.help-card-btn:hover {
+  background: var(--btn-primary-hover);
+  transform: translateY(-1px);
 }
 
 .modal-backdrop {
@@ -360,14 +467,6 @@
   border-radius: 14px;
 }
 
-.daily-entry-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 110px;
-  flex-shrink: 0;
-}
-
 .skeleton-chip {
   width: 110px;
   height: 34px;
@@ -407,17 +506,11 @@
 }
 
 .skeleton-help {
-  min-height: 160px;
-  padding: 18px;
+  min-height: 320px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.skeleton-help-title {
-  width: 65%;
-  height: 18px;
-  margin-bottom: 6px;
+  gap: 0;
 }
 
 @keyframes shimmer {
@@ -426,5 +519,22 @@
   }
   100% {
     background-position: 0 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .daily-entry-hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .daily-entry-actions {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .daily-entry-actions button,
+  .daily-entry-actions a {
+    width: 100%;
   }
 }

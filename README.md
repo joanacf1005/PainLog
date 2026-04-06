@@ -10,7 +10,7 @@ This project aligns with SDG 3 - Good Health and Well-Being, because it supports
 
 ## Homepage Screenshot
 
-![Homepage screenshot](frontend\painlog-frontend\public\assetshomepage.jpeg)
+![Homepage screenshot](assets\resources\assetshomepage.jpeg)
 
 ## Tech Stack
 
@@ -49,15 +49,12 @@ Create a `.env` file based on the `.env.example` file:
     ```
 
 Start the frontend app:
-    1. cd frontend
-    2. cd painlog-frontend
-    3. ng serve
-
-Open the app in your browser
-    Go to: http://localhost:4200
+    1. cd frontend/painlog-frontend
+    3. ng serve --open
 
 Production URL:
-    ----------------------
+    https://painlog-frontend-k1s10ndo4-joanacf1005s-projects.vercel.app/login
+    
 
 ## Implemented features
 
@@ -73,4 +70,4 @@ Production URL:
 
 ## Design Decision
  
-One important design decision in this project was splitting the KPI cards into a separate component. This kept the homepage cleaner, reduced repetition, and made the UI easier to maintain and extend. It also helped separate data logic from presentation logic, which improves readability and scalability. 
+One important design decision in this project was splitting the KPI cards into a separate component. This kept the homepage cleaner, reduced repetition, and made the UI easier to maintain and extend. It also helped separate data logic from presentation logic, which improves readability and scalability. The resources page is also made up of reusable cards so it can be used in multiple places without repeating logic.

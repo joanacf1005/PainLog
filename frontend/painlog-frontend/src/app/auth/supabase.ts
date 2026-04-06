@@ -21,10 +21,7 @@ export class SupabaseService {
   }
 
   signInWithPassword(email: string, password: string) {
-    return this.supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    return this.supabase.auth.signInWithPassword({ email, password });
   }
 
   signUp(email: string, password: string, firstName: string, lastName: string) {
@@ -32,10 +29,7 @@ export class SupabaseService {
       email,
       password,
       options: {
-        data: {
-          firstName,
-          lastName,
-        },
+        data: { firstName, lastName },
       },
     });
   }
@@ -93,7 +87,8 @@ export class SupabaseService {
     return await this.supabase
       .from('PainEntries')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select();
   }
 
   getMedicationEntries() {
@@ -102,12 +97,5 @@ export class SupabaseService {
 
   getMedications() {
     return this.supabase.from('Medication').select('*');
-  }
-
-  getMedicationEntriesByPainEntryId(painEntryId: string) {
-    return this.supabase
-      .from('MedicationEntries')
-      .select('*')
-      .eq('painEntriesId', painEntryId);
   }
 }

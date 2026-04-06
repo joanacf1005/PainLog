@@ -4,18 +4,11 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../auth/supabase';
+import { Medication, MedicationEntry, PainEntry } from '../new-entry/new-entry';
 
-export interface PainEntry {
-  id: string;
-  painLocation: string;
-  painIntensity: number;
-  painType: string;
-  hasTakenMedication: boolean;
-  energyLevel: number;
-  sleepHours: number;
-  notes: string | null;
-  created_at?: string;
-  userId?: string;
+export interface DetailedPainEntry extends PainEntry {
+  medicationName?: string | null;
+  medicationDosage?: string | null;
 }
 
 @Component({
@@ -35,7 +28,7 @@ export class DetailsPage implements OnInit {
   loading = false;
   errorMessage = '';
   entryId: string | null = null;
-  entry: PainEntry | null = null;
+  entry: DetailedPainEntry | null = null;
 
   showDeleteModal = false;
 
@@ -83,9 +76,31 @@ export class DetailsPage implements OnInit {
       const headers = await this.getAuthHeaders();
       if (!headers) return;
 
-      this.entry = await firstValueFrom(
-        this.http.get<PainEntry>(`http://localhost:3000/api/pain-entries/${id}`, { headers })
+      const [entry, medicationEntries, medications] = await Promise.all([
+        firstValueFrom(
+          this.http.get<PainEntry>(`http://localhost:3000/api/pain-entries/${id}`, { headers })
+        ),
+        firstValueFrom(
+          this.http.get<MedicationEntry[]>(`http://localhost:3000/api/medication-entries`, { headers })
+        ),
+        firstValueFrom(
+          this.http.get<Medication[]>(`http://localhost:3000/api/medication`, { headers })
+        ),
+      ]);
+
+      const relation = medicationEntries.find(
+        r => String(r.painEntriesId) === String(entry.id)
       );
+
+      const medication = relation
+        ? medications.find(m => String(m.id) === String(relation.medicationId))
+        : undefined;
+
+      this.entry = {
+        ...entry,
+        medicationName: medication?.name ?? null,
+        medicationDosage: medication?.dosage ?? null,
+      };
     } catch (error: any) {
       console.error('Load details error:', error);
       this.errorMessage =
@@ -110,6 +125,17 @@ export class DetailsPage implements OnInit {
     if (value <= 1) return 'energy-low';
     if (value <= 3) return 'energy-medium';
     return 'energy-high';
+  }
+
+  getSleepClass(value?: number | null): string {
+    const safeValue = value ?? 0;
+
+    if (safeValue < 5) return 'sleep-low';
+    if (safeValue >= 5 && safeValue <= 6) return 'sleep-medium-low';
+    if (safeValue > 6 && safeValue <= 7) return 'sleep-medium';
+    if (safeValue > 7 && safeValue <= 9) return 'sleep-good';
+    if (safeValue > 9 && safeValue <= 10) return 'sleep-medium';
+    return 'sleep-medium-low';
   }
 
   openDeleteModal(): void {

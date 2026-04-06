@@ -1,0 +1,39 @@
+<section class="kpis-section">
+  @if (loading) {
+    <div class="kpi-card skeleton-kpi">
+      <div class="skeleton-kpi-title"></div>
+      <div class="skeleton-kpi-value"></div>
+    </div>
+
+    <div class="kpi-card skeleton-kpi">
+      <div class="skeleton-kpi-title"></div>
+      <div class="skeleton-kpi-value"></div>
+    </div>
+
+    <div class="kpi-card skeleton-kpi">
+      <div class="skeleton-kpi-title"></div>
+      <div class="skeleton-kpi-value"></div>
+    </div>
+  } @else {
+    <div class="kpi-card">
+      <h3>Average Energy Level</h3>
+      <h4 [ngClass]="getEnergyClass(stats.avgEnergy)">
+        {{ stats.avgEnergy }}
+      </h4>
+    </div>
+
+    <div class="kpi-card">
+      <h3>Average sleep hours</h3>
+      <h4 [ngClass]="getSleepClass(stats.avgSleep)">
+        {{ stats.avgSleep }}
+      </h4>
+    </div>
+
+    <div class="kpi-card">
+      <h3>% of times you took medication</h3>
+      <h4 [ngClass]="getMedicationClass(stats.medicationPercentage)">
+        {{ stats.medicationPercentage }}%
+      </h4>
+    </div>
+  }
+</section>

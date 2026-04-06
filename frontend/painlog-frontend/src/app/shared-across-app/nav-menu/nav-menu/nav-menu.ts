@@ -7,10 +7,12 @@ import { SupabaseService } from '../../../auth/supabase';
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './nav-menu.html',
-  styleUrl: './nav-menu.css'
+  styleUrls: ['./nav-menu.css']
 })
 export class NavMenu implements OnInit, OnDestroy {
   userName = 'User';
+  loading = true;
+  menuOpen = false;
 
   private supabaseService = inject(SupabaseService);
   private cdr = inject(ChangeDetectorRef);
@@ -18,15 +20,32 @@ export class NavMenu implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     await this.loadUserFromSession();
+    this.loading = false;
     this.cdr.detectChanges();
 
     this.authSubscription = this.supabaseService.onAuthStateChange(() => {
-      this.loadUserFromSession().then(() => this.cdr.detectChanges());
+      this.loading = true;
+      this.cdr.detectChanges();
+
+      this.loadUserFromSession().then(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      });
     });
   }
 
   ngOnDestroy(): void {
     this.authSubscription?.subscription?.unsubscribe?.();
+  }
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenuOnMobile(): void {
+    if (window.innerWidth <= 768) {
+      this.menuOpen = false;
+    }
   }
 
   async loadUserFromSession(): Promise<void> {

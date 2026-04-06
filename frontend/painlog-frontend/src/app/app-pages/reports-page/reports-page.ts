@@ -5,7 +5,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../auth/supabase';
 import { PainEntry, Medication, MedicationEntry } from '../new-entry/new-entry';
-import { DetailsPage } from '../details-page/details-page';
 import { RouterLink } from '@angular/router';
 
 enum PainEntryFilter {
@@ -98,7 +97,11 @@ export class ReportsPage implements OnInit {
         firstValueFrom(this.http.get<Medication[]>('http://localhost:3000/api/medication', { headers })),
       ]);
 
-      this.allEntries = painEntries.map(entry => {
+      const orderedPainEntries = [...painEntries].sort(
+        (a, b) => new Date(b.created_at ?? '').getTime() - new Date(a.created_at ?? '').getTime()
+      );
+
+      this.allEntries = orderedPainEntries.map(entry => {
         const relation = medicationEntries.find(
           r => String(r.painEntriesId) === String(entry.id)
         );

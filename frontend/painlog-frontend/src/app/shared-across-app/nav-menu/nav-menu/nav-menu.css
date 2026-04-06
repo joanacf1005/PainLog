@@ -1,20 +1,35 @@
 :host {
   display: block;
-  height: 100%;
   width: 100%;
+  min-height: 100%;
+  background: var(--background-card);
 }
 
 .navigation-menu {
-  height: 100vh;
+  min-height: 100%;
+  height: auto;
   background: var(--background-card);
   color: var(--text-main);
   overflow: hidden;
-  height: -webkit-fill-available;
+  position: relative;
+}
+
+.disabled-link {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.menu-toggle {
+  display: none;
+}
+
+.menu-overlay {
+  display: none;
 }
 
 .menu-container {
-  height: 100%;
-  padding: 1.5rem 0;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -32,16 +47,12 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: var(--btn-primary);
+  background: linear-gradient(135deg, var(--btn-primary), var(--btn-secondary));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;
   flex-shrink: 0;
-}
-
-.profile-avatar {
-  background: linear-gradient(135deg, var(--btn-primary), var(--btn-secondary));
 }
 
 .profile-details {
@@ -92,7 +103,6 @@
 }
 
 .menu-icon {
-  font-size: 1.2rem;
   width: 24px;
   text-align: center;
   flex-shrink: 0;
@@ -108,4 +118,180 @@
   flex-shrink: 0;
 }
 
+.skeleton-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
+.skeleton-avatar,
+.skeleton-line,
+.skeleton-icon,
+.skeleton-text,
+.skeleton-nav-item {
+  border-radius: 12px;
+  background: linear-gradient(90deg, #e6eaf0 25%, #f3f5f8 37%, #e6eaf0 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-welcome {
+  width: 70px;
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+.skeleton-name {
+  width: 120px;
+  height: 18px;
+}
+
+.skeleton-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.skeleton-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  min-height: 48px;
+  border-radius: 14px;
+}
+
+.skeleton-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.skeleton-text {
+  height: 16px;
+  width: 90px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: flex;
+    position: fixed;
+    top: 4rem;
+    left: 1rem;
+    right: auto;
+    z-index: 1100;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 12px;
+    background: var(--background-card);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: top 0.2s ease, left 0.2s ease, right 0.2s ease;
+  }
+
+  .menu-toggle.menu-open {
+    top: 1rem;
+    left: auto;
+    right: 1rem;
+  }
+
+
+  .menu-toggle .bar {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--text-main);
+    border-radius: 999px;
+    position: relative;
+  }
+
+  .menu-toggle .bar::before,
+  .menu-toggle .bar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 2px;
+    background: var(--text-main);
+    border-radius: 999px;
+  }
+
+  .menu-toggle .bar::before {
+    top: -6px;
+  }
+
+  .menu-toggle .bar::after {
+    top: 6px;
+  }
+
+  .menu-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1040;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .menu-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .navigation-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    max-width: 85vw;
+    height: 100vh;
+    z-index: 1050;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.18);
+  }
+
+  .navigation-menu.menu-open {
+    transform: translateX(0);
+  }
+
+  .main-navigation a {
+    padding: 0.95rem 1.25rem;
+  }
+
+  .user-profile {
+    padding: 1.25rem 1.25rem 1.75rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .navigation-menu {
+    transform: none;
+  }
+
+  .menu-overlay {
+    display: none;
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../supabase';
@@ -17,6 +17,7 @@ export class Login {
   private supabase = inject(SupabaseService);
   private router = inject(Router);
   private authState = inject(AuthState);
+  private cdr = inject(ChangeDetectorRef);
 
   loading = false;
   errorMessage = '';
@@ -26,33 +27,49 @@ export class Login {
     password: ['', [Validators.required]],
   });
 
+  get emailCtrl() {
+    return this.form.get('email');
+  }
+
+  get passwordCtrl() {
+    return this.form.get('password');
+  }
+
   async submit() {
     this.errorMessage = '';
+    this.form.markAllAsTouched();
+    this.form.updateValueAndValidity();
 
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
+      this.cdr.detectChanges();
       return;
     }
 
     this.loading = true;
+    this.cdr.detectChanges();
 
     try {
-      const email = this.form.value.email ?? '';
-      const password = this.form.value.password ?? '';
+      const email = this.emailCtrl?.value ?? '';
+      const password = this.passwordCtrl?.value ?? '';
 
       const { error } = await this.supabase.signInWithPassword(email, password);
 
       if (error) {
-        this.errorMessage = error.message;
+        this.errorMessage = 'Invalid email or password. Please check your credentials.';
+        this.form.setErrors({ invalidCredentials: true });
+        this.cdr.detectChanges();
         return;
       }
 
       this.authState.setLoggedIn(true);
       await this.router.navigate(['/homepage']);
-    } catch (error: any) {
-      this.errorMessage = error?.message ?? 'Login error';
+    } catch (err: any) {
+      this.errorMessage = err?.message ?? 'Login error';
+      this.form.setErrors({ loginError: true });
+      this.cdr.detectChanges();
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 }

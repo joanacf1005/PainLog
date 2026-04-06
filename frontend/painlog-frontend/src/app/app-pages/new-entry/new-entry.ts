@@ -7,16 +7,16 @@ import { firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../auth/supabase';
 
 export interface PainEntry {
-    id: string;
-    painLocation: string;
-    painIntensity: number;
-    painType: string;
-    hasTakenMedication: boolean;
-    energyLevel: number;
-    sleepHours: number;
-    notes: string | null;
-    created_at?: string;
-    userId?: string;
+  id: string;
+  painLocation: string;
+  painIntensity: number;
+  painType: string;
+  hasTakenMedication: boolean;
+  energyLevel: number;
+  sleepHours: number;
+  notes: string | null;
+  created_at?: string;
+  userId?: string;
 }
 
 export interface Medication {
@@ -53,7 +53,7 @@ export class NewEntry implements OnInit {
   entryId: string | null = null;
 
   form = this.fb.group({
-    painLocation: ['', [Validators.required, Validators.minLength(3)]],
+    painLocation: ['', [Validators.required, Validators.minLength(2)]],
     painIntensity: ['', [Validators.required]],
     painType: ['', [Validators.required]],
     hasTakenMedication: [false],
@@ -124,17 +124,33 @@ export class NewEntry implements OnInit {
       const headers = await this.getAuthHeaders();
       if (!headers) return;
 
-      const entry = await firstValueFrom(
-        this.http.get<any>(`http://localhost:3000/api/pain-entries/${id}`, { headers })
+      const [entry, medicationEntries, medications] = await Promise.all([
+        firstValueFrom(
+          this.http.get<any>(`http://localhost:3000/api/pain-entries/${id}`, { headers })
+        ),
+        firstValueFrom(
+          this.http.get<MedicationEntry[]>(`http://localhost:3000/api/medication-entries`, { headers })
+        ),
+        firstValueFrom(
+          this.http.get<Medication[]>(`http://localhost:3000/api/medication`, { headers })
+        ),
+      ]);
+
+      const relation = medicationEntries.find(
+        r => String(r.painEntriesId) === String(entry.id)
       );
+
+      const medication = relation
+        ? medications.find(m => String(m.id) === String(relation.medicationId))
+        : undefined;
 
       this.form.patchValue({
         painLocation: entry.painLocation ?? '',
         painIntensity: entry.painIntensity ?? '',
         painType: entry.painType ?? '',
         hasTakenMedication: !!entry.hasTakenMedication,
-        name: entry.name ?? '',
-        dosage: entry.dosage ?? '',
+        name: medication?.name ?? '',
+        dosage: medication?.dosage ?? '',
         energyLevel: entry.energyLevel ?? '',
         sleepHours: entry.sleepHours ?? '',
         notes: entry.notes ?? '',
@@ -151,6 +167,16 @@ export class NewEntry implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  private async getExistingMedicationRelation(headers: HttpHeaders): Promise<MedicationEntry | undefined> {
+    if (!this.entryId) return undefined;
+
+    const relations = await firstValueFrom(
+      this.http.get<MedicationEntry[]>(`http://localhost:3000/api/medication-entries`, { headers })
+    );
+
+    return relations.find(r => String(r.painEntriesId) === String(this.entryId));
   }
 
   async submit(): Promise<void> {
@@ -192,31 +218,7 @@ export class NewEntry implements OnInit {
         return;
       }
 
-      let createdMedicationId: string | null = null;
-
-      if (hasTakenMedication) {
-        const name = String(raw.name ?? '').trim();
-        const dosage = String(raw.dosage ?? '').trim();
-
-        if (!name || !dosage) {
-          this.errorMessage = 'Fill in medication name and dosage.';
-          return;
-        }
-
-        const medicationResponse: any = await firstValueFrom(
-          this.http.post(
-            'http://localhost:3000/api/medication',
-            { name, dosage },
-            { headers }
-          )
-        );
-
-        createdMedicationId =
-          medicationResponse?.id ||
-          medicationResponse?.data?.id ||
-          medicationResponse?.medication?.id ||
-          null;
-      }
+      let savedPainEntryId: string | null = this.entryId;
 
       const painEntryPayload = {
         painLocation,
@@ -247,24 +249,106 @@ export class NewEntry implements OnInit {
           )
         );
 
-        createdPainEntryId =
+        savedPainEntryId =
           painResponse?.id ||
           painResponse?.data?.id ||
           painResponse?.painEntry?.id ||
           null;
       }
 
-      if (hasTakenMedication && createdPainEntryId && createdMedicationId) {
-        await firstValueFrom(
+      if (this.isEditMode && this.entryId) {
+        const existingRelation = await this.getExistingMedicationRelation(headers);
+
+        if (!hasTakenMedication) {
+          if (existingRelation?.id) {
+            await firstValueFrom(
+              this.http.delete(
+                `http://localhost:3000/api/medication-entries/${existingRelation.id}`,
+                { headers }
+              )
+            );
+          }
+        } else {
+          const name = String(raw.name ?? '').trim();
+          const dosage = String(raw.dosage ?? '').trim();
+
+          if (!name || !dosage) {
+            this.errorMessage = 'Fill in medication name and dosage.';
+            return;
+          }
+
+          if (existingRelation?.medicationId) {
+            await firstValueFrom(
+              this.http.put(
+                `http://localhost:3000/api/medication/${existingRelation.medicationId}`,
+                { name, dosage },
+                { headers }
+              )
+            );
+          } else if (savedPainEntryId) {
+            const medicationResponse: any = await firstValueFrom(
+              this.http.post(
+                'http://localhost:3000/api/medication',
+                { name, dosage },
+                { headers }
+              )
+            );
+
+            const createdMedicationId =
+              medicationResponse?.id ||
+              medicationResponse?.data?.id ||
+              medicationResponse?.medication?.id ||
+              null;
+
+            if (createdMedicationId) {
+              await firstValueFrom(
+                this.http.post(
+                  'http://localhost:3000/api/medication-entries',
+                  {
+                    painEntriesId: savedPainEntryId,
+                    medicationId: createdMedicationId,
+                  },
+                  { headers }
+                )
+              );
+            }
+          }
+        }
+      } else if (hasTakenMedication && savedPainEntryId) {
+        const name = String(raw.name ?? '').trim();
+        const dosage = String(raw.dosage ?? '').trim();
+
+        if (!name || !dosage) {
+          this.errorMessage = 'Fill in medication name and dosage.';
+          return;
+        }
+
+        const medicationResponse: any = await firstValueFrom(
           this.http.post(
-            'http://localhost:3000/api/medication-entries',
-            {
-              painEntriesId: createdPainEntryId,
-              medicationId: createdMedicationId,
-            },
+            'http://localhost:3000/api/medication',
+            { name, dosage },
             { headers }
           )
         );
+
+        const createdMedicationId =
+          medicationResponse?.id ||
+          medicationResponse?.data?.id ||
+          medicationResponse?.medication?.id ||
+          null;
+
+        if (createdMedicationId) {
+          await firstValueFrom(
+            this.http.post(
+              'http://localhost:3000/api/medication-entries',
+              {
+                painEntriesId: savedPainEntryId,
+                medicationId: createdMedicationId,
+              },
+              { headers }
+            )
+          );
+        }
       }
 
       await this.router.navigate(['/homepage']);
