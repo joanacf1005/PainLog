@@ -1,29 +1,48 @@
-import express, { response } from 'express'
+import express from 'express'
 import cors from 'cors'
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv'
-import 'dotenv/config'
+import { verifyToken, type AuthedRequest } from './middleware/auth.js'
 
 dotenv.config()
 
-const supabaseUrl = process.env.SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SECRET_KEY
+const port = Number(process.env.PORT) || 3000
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env')
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 
-const supabase = createClient(supabaseUrl, supabaseKey)
+app.use('/api/pain-entries', verifyToken)
+app.use('/api/medication-entries', verifyToken)
+app.use('/api/medication', verifyToken)
+
 
 //________________________________________________________________________
 //PAIN ENTRIES ENDPOINTS
 
+
 //LISTA TODAS AS PainEntries 
 app.get('/api/pain-entries', async (request, response) => {
   try {
+    const req = request as AuthedRequest
+    const userId = req.user?.id
+
+    if (!userId) {
+      return response.status(401).json({ error: 'Unauthorized' })
+    }
+
     const { data, error } = await supabase //"fala" com o supabase para pedir o que é necessário
       .from('PainEntries')   
       .select('*')           // SELECT * FROM "PainEntries" no supabase
+      .eq('userId', userId) 
 
     if (error) {
       // Supabase devolveu erro (tabela não existe, sem permissões, etc.)
@@ -32,21 +51,30 @@ app.get('/api/pain-entries', async (request, response) => {
 
     // sucesso: devolve array de registos
     return response.json(data) // Envia array para Postman
-  } catch (err: any) {
+  } catch {
     //  Erro JavaScript (não Supabase): variável undefined, etc.
     return response.status(500).json({ error: 'Server Error' })
   }
 })
 
+
 //LISTA UMA PAIN ENTRY
 app.get('/api/pain-entries/:id', async (request, response) => {
   try { 
+    const req = request as AuthedRequest
+    const userId = req.user?.id
+
+    if (!userId) {
+      return response.status(401).json({ error: 'Unauthorized' })
+    }
+
     const { id } = request.params as { id: string }  // Extrai o ID da URL 
     
     const { data, error } = await supabase
       .from('PainEntries')
       .select('*')      // SELECT * FROM "PainEntries"
-      .eq('id', id)     // WHERE id = :id
+      .eq('id', id)
+      .eq('userId', userId)     // WHERE id = :id
       .single()         // Apenas 1 registo
 
     if (error) {
@@ -55,11 +83,12 @@ app.get('/api/pain-entries/:id', async (request, response) => {
 
     return response.json(data)
     
-  } catch (err: any) {
+  } catch {
     
     return response.status(500).json({ error: 'Server Error' })
   }
 })
+
 
 //ADICIONAR NOVA PAINENTRY
 //ATENÇÃO!!!!!!! AO TESTAR POST REMOVI CONSTRAITS, DEPOIS ALTERAR, 
@@ -69,6 +98,13 @@ app.get('/api/pain-entries/:id', async (request, response) => {
 
 app.post('/api/pain-entries', async (request, response) => { 
   try {
+    const req = request as AuthedRequest
+    const userId = req.user?.id
+
+    if (!userId) {
+      return response.status(401).json({ error: 'Unauthorized' })
+    }
+
     const { 
       painLocation, 
       painIntensity, 
@@ -77,28 +113,35 @@ app.post('/api/pain-entries', async (request, response) => {
       energyLevel, 
       sleepHours, 
       notes, 
-      date,
-      userId  
+      date
     } = request.body //vai buscar os dados necessários 
 
-    const required = { painLocation, painIntensity, painType, hasTakenMedication, energyLevel, sleepHours, date, userId } // Cria um objeto com apenas os campos OBRIGATÓRIOS
+    const required = { 
+      painLocation, 
+      painIntensity, 
+      painType, 
+      hasTakenMedication, 
+      energyLevel, 
+      sleepHours, 
+      date 
+    } // Cria um objeto com apenas os campos OBRIGATÓRIOS
 
-    if (Object.values(required).some(value => !value)) { // Verifica se algum campo obrigatório está vazio/null/undefined
+    if (Object.values(required).some(value => !value && value !== 0 && value !== false)) { // Verifica se algum campo obrigatório está vazio/null/undefined
       return response.status(400).json({ error: 'Missing mandatory fields!' })
     }
 
     const { data, error } = await supabase // Insere os dados na tabela 'PainEntries' do Supabase 
       .from('PainEntries')
       .insert({ 
-        "painLocation": painLocation.trim(),
-        "painIntensity": Number(painIntensity),
-        "painType": painType.trim(),
-        "hasTakenMedication": Boolean(hasTakenMedication),
-        "energyLevel": Number(energyLevel),
-        "sleepHours": Number(sleepHours),
+        painLocation: String(painLocation).trim(),
+        painIntensity: Number(painIntensity),
+        painType: String(painType).trim(),
+        hasTakenMedication: Boolean(hasTakenMedication),
+        energyLevel: Number(energyLevel),
+        sleepHours: Number(sleepHours),
         notes: notes?.trim() || null,
-        date: date,
-        "userId": userId
+        date: String(date),
+        userId
       })
       .select()//Retorna o registo inserido
       .single()//Apenas 1 registo
@@ -108,14 +151,22 @@ app.post('/api/pain-entries', async (request, response) => {
 
     return response.status(201).json(data)
     
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
 
+
 //ATUALIZA TUDO
 app.put('/api/pain-entries/:id', async (request, response) => {
   try {
+    const req = request as AuthedRequest
+    const userId = req.user?.id
+
+    if (!userId) {
+      return response.status(401).json({ error: 'Unauthorized' })
+    }
+
     const { id } = request.params as { id: string }  // Extrai o ID da URL 
     
     if (!request.body) { // Verifica se o body da requisição existe
@@ -130,8 +181,7 @@ app.put('/api/pain-entries/:id', async (request, response) => {
       energyLevel, 
       sleepHours, 
       notes, 
-      date, 
-      userId 
+      date
     } = request.body
 
     const required = {  // Cria objeto com campos OBRIGATÓRIOS e valida se todos existem
@@ -141,12 +191,11 @@ app.put('/api/pain-entries/:id', async (request, response) => {
       hasTakenMedication, 
       energyLevel, 
       sleepHours, 
-      date, 
-      userId 
+      date
     }
     
     const missingFields = Object.entries(required) // Verifica campos que estão em falta (ignora 0 e false que são válidos)
-      .filter(([key, value]) => !value && value !== 0 && value !== false)
+      .filter(([, value]) => !value && value !== 0 && value !== false)
       .map(([key]) => key)
 
     if (missingFields.length > 0) {
@@ -160,6 +209,7 @@ app.put('/api/pain-entries/:id', async (request, response) => {
       .from('PainEntries')  // Seleciona a tabela PainEntries
       .select('id')         // Só vai buscar o campo id 
       .eq('id', id)         // WHERE 
+      .eq('userId', userId)
       .single()             // Pega apenas UM registo
 
     if (!existing) {
@@ -177,10 +227,10 @@ app.put('/api/pain-entries/:id', async (request, response) => {
         energyLevel: Number(energyLevel),
         sleepHours: Number(sleepHours),
         notes: notes ? String(notes).trim() : null,
-        date: String(date),
-        userId: String(userId)
+        date: String(date)
       })
       .eq('id', id)
+      .eq('userId', userId)
       .select()
       .single()
 
@@ -190,15 +240,23 @@ app.put('/api/pain-entries/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
+
 
 //ATUALIZA PARCIALMENTE
 app.patch('/api/pain-entries/:id', async (request, response) => {
   try {
     // Extrai o ID da URL (ex: /api/pain-entries/a106b83a...)
+    const req = request as AuthedRequest
+    const userId = req.user?.id
+
+    if (!userId) {
+      return response.status(401).json({ error: 'Unauthorized' })
+    }
+
     const { id } = request.params as { id: string }
 
     // Verifica se o body da requisição existe
@@ -215,8 +273,7 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
       energyLevel, 
       sleepHours, 
       notes, 
-      date, 
-      userId 
+      date
     } = request.body
 
     // Verifica se o registo existe
@@ -224,6 +281,7 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
       .from('PainEntries')
       .select('*')       // Pega TODOS os campos atuais
       .eq('id', id)
+      .eq('userId', userId)
       .single()
 
     if (!existing) {
@@ -231,8 +289,8 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
     }
 
     //  PATCH: só atualiza campos que foram enviados (ignora nulos/vazios)
-    const updateData: any = {}
-    
+    const updateData: Record<string, unknown> = {}
+
     if (painLocation !== undefined) updateData.painLocation = String(painLocation).trim()
     if (painIntensity !== undefined) updateData.painIntensity = Number(painIntensity)
     if (painType !== undefined) updateData.painType = String(painType).trim()
@@ -241,7 +299,6 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
     if (sleepHours !== undefined) updateData.sleepHours = Number(sleepHours)
     if (notes !== undefined) updateData.notes = notes ? String(notes).trim() : null
     if (date !== undefined) updateData.date = String(date)
-    if (userId !== undefined) updateData.userId = String(userId)
 
     // Se nenhum campo para atualizar, retorna 400
     if (Object.keys(updateData).length === 0) {
@@ -253,6 +310,7 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
       .from('PainEntries')
       .update(updateData)
       .eq('id', id)
+      .eq('userId', userId)
       .select()
       .single()
 
@@ -262,14 +320,22 @@ app.patch('/api/pain-entries/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
 
+
 //APAGA UMA ENTRY
 app.delete('/api/pain-entries/:id', async (request, response) => {
   try{
+    const req = request as AuthedRequest
+    const userId = req.user?.id
+
+    if (!userId) {
+      return response.status(401).json({ error: 'Unauthorized' })
+    }
+
     const { id } = request.params as { id: string }
 
     // Verifica se o registo com o Id existe
@@ -277,6 +343,7 @@ app.delete('/api/pain-entries/:id', async (request, response) => {
       .from('PainEntries')  
       .select('id')         
       .eq('id', id)         
+      .eq('userId', userId)
       .single()   
     
     if (!existing) {
@@ -288,6 +355,7 @@ app.delete('/api/pain-entries/:id', async (request, response) => {
       .from('PainEntries')  // Seleciona a tabela PainEntries
       .delete()             // DELETE FROM "PainEntries"
       .eq('id', id)         
+      .eq('userId', userId)
       .select()             // Retorna o registo APAGADO
       .single()             // Apenas 1 registo
 
@@ -297,13 +365,15 @@ app.delete('/api/pain-entries/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
 
+
 //________________________________________________________________________
 //MEDICATION ENDPOINTS
+
 
 app.get('/api/medication', async (request, response) => {
   try {
@@ -316,10 +386,11 @@ app.get('/api/medication', async (request, response) => {
     }
 
     return response.json(data) 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
+
 
 app.get('/api/medication/:id', async (request, response) => {
   try{
@@ -337,10 +408,11 @@ app.get('/api/medication/:id', async (request, response) => {
 
     return response.json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
+
 
 app.post('/api/medication', async (request, response) => {
   try {
@@ -358,8 +430,8 @@ app.post('/api/medication', async (request, response) => {
     const { data, error } = await supabase
       .from('Medication')
       .insert({ 
-        "name": name.trim(),
-        "dosage": dosage.trim()
+        name: String(name).trim(),
+        dosage: String(dosage).trim()
       })
       .select()
       .single()
@@ -369,10 +441,11 @@ app.post('/api/medication', async (request, response) => {
 
     return response.status(201).json(data)
     
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
+
 
 app.put('/api/medication/:id', async (request, response) => {
   try {
@@ -393,7 +466,7 @@ app.put('/api/medication/:id', async (request, response) => {
     }
     
     const missingFields = Object.entries(required) 
-      .filter(([key, value]) => !value && value !== 0 && value !== false)
+      .filter(([, value]) => !value && value !== 0 && value !== false)
       .map(([key]) => key)
 
     if (missingFields.length > 0) {
@@ -415,8 +488,8 @@ app.put('/api/medication/:id', async (request, response) => {
     const { data, error } = await supabase
       .from('Medication')
       .update({ 
-        "name": name.trim(),
-        "dosage": dosage.trim()
+        name: String(name).trim(),
+        dosage: String(dosage).trim()
       })
       .eq('id', id)
       .select()
@@ -428,10 +501,11 @@ app.put('/api/medication/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
+
 
 app.patch('/api/medication/:id', async (request, response) => {
   try {
@@ -456,7 +530,7 @@ app.patch('/api/medication/:id', async (request, response) => {
       return response.status(404).json({ error: 'Entry not found' })
     }
 
-    const updateData: any = {}
+    const updateData: Record<string, unknown> = {}
     
     if (name !== undefined) updateData.name = String(name).trim()
     if (dosage !== undefined) updateData.dosage = String(dosage).trim()
@@ -478,10 +552,11 @@ app.patch('/api/medication/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
+
 
 app.delete('/api/medication/:id', async (request, response) => {
   try{
@@ -510,13 +585,14 @@ app.delete('/api/medication/:id', async (request, response) => {
 
     return response.status(200).json(data)
 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
 
+
 //_________________________________________________________________________
-//MEDICATIONENTRIES GET
+//MEDICATIONENTRIES 
 
 app.get('/api/medication-entries', async (request, response) => {
   try {
@@ -533,10 +609,11 @@ app.get('/api/medication-entries', async (request, response) => {
     }
 
     return response.json(data) 
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
+
 
 app.post('/api/medication-entries', async (request, response) => {
   try {
@@ -549,8 +626,8 @@ app.post('/api/medication-entries', async (request, response) => {
     const { data, error } = await supabase
       .from('MedicationEntries')
       .insert({ 
-        "painEntriesId": painEntriesId,
-        "medicationId": medicationId
+        painEntriesId: painEntriesId,
+        medicationId: medicationId
       })
       .select()
       .single()
@@ -560,10 +637,11 @@ app.post('/api/medication-entries', async (request, response) => {
     }
 
     return response.status(201).json(data)
-  } catch (err: any) {
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
+
 
 app.delete('/api/medication-entries/:id', async (request, response) => {
   try {
@@ -586,10 +664,12 @@ app.delete('/api/medication-entries/:id', async (request, response) => {
 
     if (error) return response.status(500).json({ error: error.message })
     return response.status(204).send()
-  } catch (err) {
+
+  } catch {
     return response.status(500).json({ error: 'Server Error' })
   }
 })
 
 
-app.listen(3333, () => console.log('Server running on port 3333'))
+
+app.listen(port, () => console.log(`Server running on port ${port}`))
